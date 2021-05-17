@@ -24,20 +24,15 @@ def Exy(x,y):
     return Exy
 
 
-def make_plot(nbins):
+def make_plot(nbins,step):
 
     #x,y,zの配列を生成
     np.set_printoptions(precision=6, floatmode='fixed', suppress=True)
 
     X_list = []
-    # print(len(X_list))
-
-    # for item in X_list:
-    #     print(item)
-
     Y_list = []
     Z_list = []
-    step = 0.05
+    step = step
     for i, x in enumerate(np.arange(-2.5, 1.51, step)):
         for j, y in enumerate(np.arange(-1.0, 3.01, step)):
             X_list.append(float(x))
@@ -66,58 +61,23 @@ def make_plot(nbins):
         mx, my = np.meshgrid(xuniq, yuniq)
         return mx, my, mz
 
-    z_min = min(Z_list)
-    print(z_min)
-
-
     X_list_meshed, Y_list_meshed, Z_list_meshed = get_meshgrid_from_xyzArray(X_list, Y_list, Z_list)
 
 
-    #X_list, Y_list = np.meshgrid(X_list, Y_list)
-    #print(X_list)
-    #Z = np.array(Z_list).shape(X_list.shape)
-
-    #fig = plt.figure()
-    """
-    fig, ax = plt.subplots()
-    ax.grid(False)
-    im=ax.imshow(Z_list_meshed, extent=[-2.5,1.5,-1.0,3.0],origin='lower',cmap='coolwarm',vmin=-147, vmax=20)
-    plt.colorbar(im)
-
-
-    """
     #contourfは離散的なデータに不向き
     # norm = plt.Normalize(vmin=-200, vmax=20)
     # colors = plt.cm.jet(norm(Z_list_meshed))
     # colors[np.array(Z_list_meshed) > 20] = (0, 0, 0, 0)
 
-    levels = MaxNLocator(nbins=nbins).tick_values(-147, 20)
+    levels = MaxNLocator(nbins=nbins).tick_values(-200, 20)
 
-    fig, ax = plt.subplots()
-    norm = plt.Normalize(vmin=-200, vmax=20)
-    cont = plt.contourf(X_list_meshed,Y_list_meshed,Z_list_meshed,cmap=cm.coolwarm,
-                        levels=levels
-                        # vmin=-147,vamx=20,
-                        #facecolors=colors
-                        # norm=norm
+    fig, ax= plt.subplots()
+    cont = plt.contourf(X_list_meshed,Y_list_meshed,Z_list_meshed,
+                        cmap='coolwarm',
+                        levels=levels,
 
                         )
-    # ax.set_aspect('equal','box')
     plt.colorbar()
-
-    """
-    ax = cont.add_subplot()
-
-    norm = plt.Normalize(vmin=-200, vmax=20)
-    colors = plt.cm.jet(norm(Z_list_meshed))
-    colors[np.array(Z_list_meshed) > 20] = (0, 0, 0, 0)
-    #ax.plot_surface(X_list_meshed,Y_list_meshed,Z_list_meshed,cmap=cm.coolwarm,linewidth=0, antialiased=False, vmin=-147, vmax=20, facecolors=colors)
-    #ax.scatter3D(X_list,Y_list,Z_list,cmap=cm.coolwarm,linewidth=0, antialiased=False, vmin=-147, vmax=20, facecolors=colors)
-
-
-    ax.set_zlim(-200, 20)
-    """
-
 
     #plt.show()
     return fig

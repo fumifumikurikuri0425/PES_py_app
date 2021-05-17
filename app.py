@@ -15,14 +15,14 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from graph import make_plot
+from MBPgraph import make_plot
 
 
 app = FastAPI()
 
 def fig_to_base64(fig):
-    """Figure を base64 文字列に変換する。
-    """
+    # Figure を base64 文字列に変換する。
+
     # Bytes IO に対して、エンコード結果を書き込む。
     ofs = BytesIO()
     fig.savefig(ofs, format="png")
@@ -35,32 +35,28 @@ def fig_to_base64(fig):
 
 
 def create_graph():
-    """matplotlib のグラフを作成する。
-    """
+    #matplotlib のグラフを作成する。
+
     x = np.linspace(-10, 10, 100)
     y = x ** 2
 
     fig, ax = plt.subplots()
     ax.plot(x, y)
-    ax.set_title("Title", c="darkred", size="large")
+    ax.set_title("Title",c="darkred", size="large")
 
     return fig
 
 templates = Jinja2Templates(directory='templates')
 
 @app.get("/")
-async def read_item(request:Request, nbins: int = 20):
+async def read_item(request:Request, nbins: int = 20, step: float = 0.05):
     # グラフを作成する。
-    fig, ax = plt.subplots()
-    ax.pie([100, 200, 300, 400, 500])
-
     print("nbins:", nbins)
-    fig2 = make_plot(nbins)
+    print("step:",step)
+    fig = make_plot(nbins,step)
 
     # グラフを base64 文字列に変換する。
-    img = fig_to_base64(fig2)
-
-
+    img = fig_to_base64(fig)
 
     return templates.TemplateResponse("index.html", {"request":request,"img":img})
 
