@@ -95,8 +95,6 @@ def make_plot(nbins):
 
     fig, ax = plt.subplots()
     norm = plt.Normalize(vmin=-200, vmax=20)
-    colors = plt.cm.jet(norm(Z_list_meshed))
-    colors[np.array(Z_list_meshed) > 20] = (0, 0, 0, 0)
     cont = plt.contourf(X_list_meshed,Y_list_meshed,Z_list_meshed,cmap=cm.coolwarm,
                         levels=levels
                         # vmin=-147,vamx=20,
@@ -121,5 +119,5 @@ def make_plot(nbins):
     """
 
 
-    # plt.show()
+    #plt.show()
     return fig
