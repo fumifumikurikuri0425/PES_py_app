@@ -1,12 +1,13 @@
 import math
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+#from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 import numpy as np
 #from scipy.stats import multivariate_normal
 
 from matplotlib.colors import BoundaryNorm
 from matplotlib.ticker import MaxNLocator
+import matplotlib.animation as animation
 
 import sys
 
@@ -22,6 +23,20 @@ def Exy(x,y):
     for i in range(4):
         Exy += A[i]*math.exp(a[i]*((x - X[i])**2) + b[i]*(x - X[i])*(y - Y[i]) + c[i]*((y - Y[i])**2))
     return Exy
+"""
+data_set = np.loadtxt(
+    fname="graph2.csv",
+    dtype="float",
+    delimiter=","
+)
+
+for data in data_set:
+    plt.scatter(data[0], data[1],c='blue',s=5)
+    plt.plot(data[0], data[1])
+
+plt.show()
+"""
+
 
 #x,y,zの配列を生成
 np.set_printoptions(precision=6, floatmode='fixed', suppress=True)
@@ -29,16 +44,15 @@ np.set_printoptions(precision=6, floatmode='fixed', suppress=True)
 X_list = []
 Y_list = []
 Z_list = []
-step = 0.05
-for i, x in enumerate(np.arange(-2.5, 1.51, step)):
-        for j, y in enumerate(np.arange(-1.0, 3.01, step)):
-            X_list.append(float(x))
-            Y_list.append(float(y))
-            MBP = Exy(x,y)
-            MBP = "{:.6f}".format(MBP)
-            Z_list.append(float(MBP))
 
-#print(Z_list)
+for i, x in enumerate(np.arange(-2.5, 1.51, 0.1)):
+    for j, y in enumerate(np.arange(-1.0, 3.01, 0.1)):
+        X_list.append(float(x))
+        Y_list.append(float(y))
+        MBP = Exy(x,y)
+        MBP = "{:.6f}".format(MBP)
+        Z_list.append(float(MBP))
+
 
 def get_meshgrid_from_xyzArray(xar, yar, zar):
     # mx, my, mz : in meshgrid
@@ -58,45 +72,54 @@ def get_meshgrid_from_xyzArray(xar, yar, zar):
     mx, my = np.meshgrid(xuniq, yuniq)
     return mx, my, mz
 
-z_min = min(Z_list)
-print(z_min)
-
-
-
 X_list_meshed, Y_list_meshed, Z_list_meshed = get_meshgrid_from_xyzArray(X_list, Y_list, Z_list)
-print(Z_list_meshed)
-# with open('X_list_meshed.dat','w') as f:
-#     f.write(X_list_meshed)
-# f.close
-
-# with open('Y_list_meshed.dat','w') as f:
-#     f.write(Y_list_meshed)
-# f.close
-
-# with open('Z_list_meshed.dat','w') as f:
-#     f.write(Z_list_meshed)
-# f.close
 
 
-"""
-#contourfは離散的なデータに不向き
 # norm = plt.Normalize(vmin=-200, vmax=20)
 # colors = plt.cm.jet(norm(Z_list_meshed))
 # colors[np.array(Z_list_meshed) > 20] = (0, 0, 0, 0)
 
-levels = MaxNLocator(nbins=10).tick_values(-147, 20)
+levels = MaxNLocator(nbins=20).tick_values(-147, 200)
 
-fig, ax = plt.subplots()
-norm = plt.Normalize(vmin=-200, vmax=20)
-cont = plt.contourf(X_list,Y_list,Z_list,
+fig, ax= plt.subplots()
+cont = plt.contourf(X_list_meshed,Y_list_meshed,Z_list_meshed,
                     cmap='coolwarm',
-                    levels=levels
-                    # vmin=-147,vamx=20,
-                    #facecolors=colors
+                    levels=levels,
 
                     )
-# ax.set_aspect('equal','box')
 plt.colorbar()
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
 
-plt.show()
-"""
+"""=================================================================
+散布図の表示
+=================================================================="""
+data_set = np.loadtxt(
+    fname="graph2.csv",
+    dtype="float",
+    delimiter=","
+)
+
+# for data in data_set:
+#     plt.scatter(data[0], data[1],c='c',s=5,alpha=0.6)
+#     #plt.plot(data[0], data[1],"o-",c="c") 
+
+p_x = []
+p_y = []
+
+for data in data_set:
+    p_x.append(data[0])
+    p_y.append(data[1])
+x_vol = len(p_x)
+# y_vol = len(p_y)
+
+def update(i,fig_title,alp):
+    if i != 0:
+        plt.cla()
+    plt.plot(p_x[0:i], p_y[0:i], c='c',alpha=alp)
+    plt.title(fig_title + 'i=' + str(i))
+
+
+ani = animation.FuncAnimation(fig, update,fargs = ('Initial Animation! ', 0.8), interval = 100, frames= x_vol)
+ani.save("test.gif", writer = 'imagemagick')
+#plt.show()

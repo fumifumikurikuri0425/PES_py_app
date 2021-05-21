@@ -3,13 +3,35 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Example</title>
+    <title>Muller Brown Potential</title>
 </head>
 
 <body>
-    <h1>Example</h1>
+    <h1>Muller Brown Potential</h1>
 
-    <img src="data:image/png;base64,{{ img }}" />
+    <img src="data:image/gif;base64,{{ gif }}" />
+
+    <form>
+        <div>
+        step: <input name="step" type="text" value="{{ step }}"></input>
+        </div>
+
+        <div>
+        x: <input name="x" type="text" value="{{x}}"></input>
+        </div>
+
+        <div>
+        y: <input name="y" type="text" value="{{y}}"></input>
+        </div>
+
+        <div>
+        check: <input name="check" type="checkbox" ></input>
+        </div>
+
+        <input type="submit" value="submit"></input>
+    </form>
+
+
 </body>
 
 </html>
