@@ -116,10 +116,10 @@ x_vol = len(p_x)
 def update(i,fig_title,alp):
     if i != 0:
         plt.cla()
-    plt.plot(p_x[0:i], p_y[0:i], c='c',alpha=alp)
+    plt.plot(p_x[0:i], p_y[0:i], c='c',alpha=0.6)
     plt.title(fig_title + 'i=' + str(i))
 
 
-ani = animation.FuncAnimation(fig, update,fargs = ('Initial Animation! ', 0.8), interval = 100, frames= x_vol)
+ani = animation.FuncAnimation(fig, update,fargs = ('Initial Animation! ', 0.8), interval = 50, frames= x_vol)
 ani.save("test.gif", writer = 'imagemagick')
 #plt.show()
