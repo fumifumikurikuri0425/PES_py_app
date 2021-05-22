@@ -1,13 +1,15 @@
 import math
-import matplotlib.pyplot as plt
-#from mpl_toolkits.mplot3d import Axes3D
-from matplotlib import cm
+# import matplotlib.pyplot as plt
+# #from mpl_toolkits.mplot3d import Axes3D
+# from matplotlib import cm
 import numpy as np
 #from scipy.stats import multivariate_normal
 
-from matplotlib.colors import BoundaryNorm
-from matplotlib.ticker import MaxNLocator
-import matplotlib.animation as animation
+# from matplotlib.colors import BoundaryNorm
+# from matplotlib.ticker import MaxNLocator
+# import matplotlib.animation as animation
+
+from bokeh.plotting import figure, output_file, show
 
 import sys
 
@@ -45,8 +47,8 @@ X_list = []
 Y_list = []
 Z_list = []
 
-for i, x in enumerate(np.arange(-2.5, 1.51, 0.1)):
-    for j, y in enumerate(np.arange(-1.0, 3.01, 0.1)):
+for i, x in enumerate(np.arange(-2.5, 1.51, 0.05)):
+    for j, y in enumerate(np.arange(-1.0, 3.01, 0.05)):
         X_list.append(float(x))
         Y_list.append(float(y))
         MBP = Exy(x,y)
@@ -74,36 +76,17 @@ def get_meshgrid_from_xyzArray(xar, yar, zar):
 
 X_list_meshed, Y_list_meshed, Z_list_meshed = get_meshgrid_from_xyzArray(X_list, Y_list, Z_list)
 
+p = figure(tooltips=[("X", "$X_list"), ("Y", "$Y_list"), ("value", "@image")])
+p.x_range.range_padding = p.y_range.range_padding = 0
 
-# norm = plt.Normalize(vmin=-200, vmax=20)
-# colors = plt.cm.jet(norm(Z_list_meshed))
-# colors[np.array(Z_list_meshed) > 20] = (0, 0, 0, 0)
+p.image (image=[Z_list_meshed], x=-2.5, y=-1.0, dw=1.5, dh=3.0, palette="Spectral11", level="image")
+p.grid.grid_line_width = 0.5
 
-levels = MaxNLocator(nbins=20).tick_values(-147, 200)
+output_file("image.html", title="MBP.py test")
 
-fig, ax= plt.subplots()
-cont = plt.contourf(X_list_meshed,Y_list_meshed,Z_list_meshed,
-                    cmap='coolwarm',
-                    levels=levels,
+show(p)
 
-                    )
-plt.colorbar()
-ax.set_xlabel('X')
-ax.set_ylabel('Y')
-
-"""=================================================================
-散布図の表示
-=================================================================="""
-data_set = np.loadtxt(
-    fname="graph2.csv",
-    dtype="float",
-    delimiter=","
-)
-
-# for data in data_set:
-#     plt.scatter(data[0], data[1],c='c',s=5,alpha=0.6)
-#     #plt.plot(data[0], data[1],"o-",c="c") 
-
+"""
 p_x = []
 p_y = []
 
@@ -123,3 +106,4 @@ def update(i,fig_title,alp):
 ani = animation.FuncAnimation(fig, update,fargs = ('Initial Animation! ', 0.8), interval = 50, frames= x_vol)
 ani.save("test.gif", writer = 'imagemagick')
 #plt.show()
+"""

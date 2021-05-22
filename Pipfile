@@ -11,6 +11,7 @@ uvicorn = "*"
 aiofiles = "*"
 jinja2 = "*"
 pandas = "*"
+bokeh = "*"
 
 [dev-packages]
 
