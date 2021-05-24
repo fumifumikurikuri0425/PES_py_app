@@ -9,7 +9,6 @@ from bokeh.plotting import figure, show
 from bokeh import palettes
 from bokeh.models import (ColorBar, FixedTicker, LinearColorMapper, PrintfTickFormatter)
 from bokeh.resources import CDN
-from bokeh.embed import file_html
 
 
 A=[-200,-100,-170,15]
@@ -26,7 +25,7 @@ def Exy(x,y):
     return Exy
 
 
-def make_plot(interval):
+def make_plot(color_tone,interval):
 
     #x,y,zの配列を生成
     np.set_printoptions(precision=6, floatmode='fixed', suppress=True)
@@ -64,10 +63,10 @@ def make_plot(interval):
 
     X_list_meshed, Y_list_meshed, Z_list_meshed = get_meshgrid_from_xyzArray(X_list, Y_list, Z_list)
 
-    p = figure(tooltips=[("X", "$x"), ("Y", "$y"), ("value", "@image")],width=600,height=500)
+    p = figure(tooltips=[("X", "$x"), ("Y", "$y"), ("value", "@image")],width=700,height=500)
     p.x_range.range_padding = p.y_range.range_padding = 0
 
-    exp_cmap = LinearColorMapper(palette=palettes.inferno(40),
+    exp_cmap = LinearColorMapper(palette=palettes.inferno(color_tone),
                                 low = -147,
                                 high = 100)
 
@@ -76,9 +75,7 @@ def make_plot(interval):
     p.grid.grid_line_width = 0.5
 
 
-    levels = np.linspace(-147, 100, 40)
-    print(levels)
-
+    levels = np.linspace(-147, 100, color_tone)
 
     color_bar = ColorBar(color_mapper=exp_cmap, major_label_text_font_size='8pt', ticker=FixedTicker(ticks=levels),
                         formatter=PrintfTickFormatter(format='%.2f'), label_standoff=6, border_line_color=None, location=(0, 0))
@@ -107,7 +104,7 @@ def make_plot(interval):
     for data in data_set:
         p_x.append(data[0])
         p_y.append(data[1])
-    x_vol = len(p_x)
+    #x_vol = len(p_x)
     # y_vol = len(p_y)
 
     p.line(p_x,p_y,line_width=2,

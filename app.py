@@ -42,9 +42,10 @@ templates = Jinja2Templates(directory='templates')
 async def read_item(request:Request,
                     interval: float = 0.05,
                     x: float = -0.75, y: float = 0.55,
+                    tone: int = 20,
                     check: str = '', step: float = 0.01):
     # グラフを作成する。
-    # print("nbins:", nbins)
+    print("colortone:", tone)
     print("interval:",interval)
     print("x=",x,"y=",y)
     print("step=",step)
@@ -55,7 +56,7 @@ async def read_item(request:Request,
     check_value = 0 if check == "on" else 1
     print("check_value:",check_value)
     make_data(x,y,check_value,step)
-    fig = make_plot(interval)
+    fig = make_plot(tone,interval)
 
     script, div = components(fig, INLINE)
     # print(script)
@@ -65,7 +66,8 @@ async def read_item(request:Request,
     return templates.TemplateResponse("index.html", {"request":request,
                                                       "js_resources":js_resources,
                                                       "css_resources": css_resources,
-                                                      "plot_div": div, "plot_script": script, "step": step, "x":x, "y":y,})
+                                                      "plot_div": div, "plot_script": script,
+                                                      "step": step, "x":x, "y":y,"tone":tone})
 
 
 if __name__ == "__main__":
