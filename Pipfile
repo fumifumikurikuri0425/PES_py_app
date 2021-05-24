@@ -12,6 +12,7 @@ aiofiles = "*"
 jinja2 = "*"
 pandas = "*"
 bokeh = "*"
+scikit-image = "*"
 
 [dev-packages]
 

@@ -4,12 +4,16 @@
 <head>
     <meta charset="utf-8">
     <title>Muller Brown Potential</title>
+    {{ js_resources|safe }} {{ css_resources|safe }}
 </head>
 
 <body>
     <h1>Muller Brown Potential</h1>
 
-    <img src="data:image/gif;base64,{{ gif }}" />
+    <div>
+        {{ plot_div|safe}} {{plot_script|safe}}
+     </div>
+
 
     <form>
         <div>

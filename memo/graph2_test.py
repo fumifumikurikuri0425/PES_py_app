@@ -10,6 +10,8 @@ import numpy as np
 # import matplotlib.animation as animation
 
 from bokeh.plotting import figure, output_file, show
+from bokeh.models import LinearColorMapper
+from bokeh import palettes
 
 import sys
 
@@ -47,8 +49,8 @@ X_list = []
 Y_list = []
 Z_list = []
 
-for i, x in enumerate(np.arange(-2.5, 1.51, 0.05)):
-    for j, y in enumerate(np.arange(-1.0, 3.01, 0.05)):
+for x in np.arange(-2.5, 1.51, 0.05):
+    for y in np.arange(-1.0, 3.01, 0.05):
         X_list.append(float(x))
         Y_list.append(float(y))
         MBP = Exy(x,y)
@@ -76,17 +78,25 @@ def get_meshgrid_from_xyzArray(xar, yar, zar):
 
 X_list_meshed, Y_list_meshed, Z_list_meshed = get_meshgrid_from_xyzArray(X_list, Y_list, Z_list)
 
-p = figure(tooltips=[("X", "$X_list"), ("Y", "$Y_list"), ("value", "@image")])
+p = figure(tooltips=[("X", "$x"), ("Y", "$y"), ("value", "@image")])
 p.x_range.range_padding = p.y_range.range_padding = 0
 
-p.image (image=[Z_list_meshed], x=-2.5, y=-1.0, dw=1.5, dh=3.0, palette="Spectral11", level="image")
+exp_cmap = LinearColorMapper(palette=palettes.inferno(20),
+                             low = -147,
+                             high = 100)
+
+
+p.image (image=[Z_list_meshed], x=-2.5, y=-1.0, dw=4, dh=4, color_mapper=exp_cmap,  level="image")
 p.grid.grid_line_width = 0.5
 
-output_file("image.html", title="MBP.py test")
 
-show(p)
+data_set = np.loadtxt(
+        fname="graph2.csv",
+        dtype="float",
+        delimiter=","
+    )
 
-"""
+
 p_x = []
 p_y = []
 
@@ -96,6 +106,14 @@ for data in data_set:
 x_vol = len(p_x)
 # y_vol = len(p_y)
 
+p.line(p_x,p_y,line_width=2,
+       color="cyan",
+       alpha=0.5
+       )
+
+show(p)
+
+"""
 def update(i,fig_title,alp):
     if i != 0:
         plt.cla()
