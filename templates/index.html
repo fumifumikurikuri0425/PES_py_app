@@ -3,43 +3,50 @@
 
 <head>
     <meta charset="utf-8">
+    <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
     <title>Muller Brown Potential</title>
     {{ js_resources|safe }} {{ css_resources|safe }}
 </head>
 
 <body>
-    <h1>Muller Brown Potential</h1>
+<div id="pagebody">
+    <div id="header">
+        <h1>Muller Brown Potential</h1>
+    </div>
 
-    <div>
-        {{ plot_div|safe}} {{plot_script|safe}}
-     </div>
+    <div id="graph">
+        {{ plot_div|safe }} {{ plot_script|safe }}
+    </div>
 
 
-    <form>
+    <form id="form1">
         <div>
-        step: <input name="step" type="text" value="{{ step }}"></input>
+        step: <input name="step" type="text" size="7" value="{{ step }}" required></input>
         </div>
 
         <div>
-        x: <input name="x" type="text" value="{{x}}"></input>
+        x: <input name="x" type="text" size="10" value="{{x}}" required></input>
         </div>
 
         <div>
-        y: <input name="y" type="text" value="{{y}}"></input>
+        y: <input name="y" type="text" size="10" value="{{y}}" required></input>
         </div>
 
         <div>
-        color tone: <input name="tone" type="text" value="{{ tone }}"></input>
+        color tone: <input name="tone" type="text" size="4" value="{{ tone }}" required></input>
         </div>
 
         <div>
-        check: <input name="check" type="checkbox" ></input>
+        saddle point:
+        <label>left<input type="radio" name="check" value="{{0}}"></label>
+        <label>right<input type="radio" name="check" value="{{1}}"></label>
         </div>
 
-        <input type="submit" value="submit"></input>
+        <input type="submit" value="submit"><br>
+        <input type="reset" value="reset">
     </form>
 
-
+</div>
 </body>
 
 </html>
