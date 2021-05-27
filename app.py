@@ -21,7 +21,7 @@ templates = Jinja2Templates(directory='templates')
 @app.get("/")
 async def read_item(request:Request,
                     #intervalのデフォルトは0.05
-                    interval: float = 0.1,
+                    interval: float = 0.05,
                     x: float = -0.75, y: float = 0.55,
                     tone: int = 20, check: int = 0,
                     step: float = 0.01):

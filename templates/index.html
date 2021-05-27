@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 
 <head>
     <meta charset="utf-8">
@@ -10,9 +10,11 @@
 
 <body>
 <div id="pagebody">
-    <div id="header">
-        <h1>Muller Brown Potential</h1>
-    </div>
+    <header>
+        <h1>
+            <a href="/">Muller Brown Potential</a>
+        </h1>
+    </header>
 
     <div id="graph">
         {{ plot_div|safe }} {{ plot_script|safe }}
@@ -21,29 +23,29 @@
 
     <form id="form1">
         <div>
-        step: <input name="step" type="text" size="7" value="{{ step }}" required></input>
+        step: <input name="step" type="number" step="any" min="1e-9" size="7" value="{{ step }}" required></input>
         </div>
 
         <div>
-        x: <input name="x" type="text" size="10" value="{{x}}" required></input>
+        Initial x: <input name="x" type="text" size="10" value="{{x}}" required></input>
         </div>
 
         <div>
-        y: <input name="y" type="text" size="10" value="{{y}}" required></input>
+        Initial y: <input name="y" type="text" size="10" value="{{y}}" required></input>
         </div>
 
         <div>
-        color tone: <input name="tone" type="text" size="4" value="{{ tone }}" required></input>
+        color tone: <input name="tone" type="number" size="4" value="{{ tone }}" min="0" required></input>
         </div>
 
         <div>
         saddle point:
-        <label>left<input type="radio" name="check" value="{{0}}"></label>
-        <label>right<input type="radio" name="check" value="{{1}}"></label>
+        <label>left  <input type="radio" name="check" value="{{0}}" checked></label>
+        <label> right  <input type="radio" name="check" value="{{1}}"></label>
         </div>
 
-        <input type="submit" value="submit"><br>
-        <input type="reset" value="reset">
+        <input class="btn" type="submit" value="submit"><br>
+        <input class="btn" type="reset" value="reset">
     </form>
 
 </div>
