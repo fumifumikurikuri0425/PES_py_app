@@ -40,12 +40,18 @@
 
         <div>
         saddle point:
+        {% if check==0 %}
         <label>left  <input type="radio" name="check" value="{{0}}" checked></label>
         <label> right  <input type="radio" name="check" value="{{1}}"></label>
+        {% else %}
+        <label>left  <input type="radio" name="check" value="{{0}}" ></label>
+        <label> right  <input type="radio" name="check" value="{{1}}" checked></label>
+        {% endif %}
         </div>
 
         <input class="btn" type="submit" value="submit"><br>
         <input class="btn" type="reset" value="reset">
+
     </form>
 
 </div>
