@@ -1,5 +1,3 @@
-import math
-
 import numpy as np
 
 import sys
@@ -7,22 +5,27 @@ import sys
 from skimage import measure
 from bokeh.plotting import figure, show
 from bokeh import palettes
-from bokeh.models import ColorBar, FixedTicker, LinearColorMapper, PrintfTickFormatter
+from bokeh.models import (
+    ColorBar,
+    FixedTicker,
+    LinearColorMapper,
+    PrintfTickFormatter,
+    Title,
+)
 from bokeh.resources import CDN
 
 
-A = [-200, -100, -170, 15]
-a = [-1, -1, -6.5, 0.7]
-b = [0, 0, 11, 0.6]
-c = [-10, -10, -6.5, 0.7]
-X = [1, 0, -0.5, -1]
-Y = [0, 0.5, 1.5, 1]
-
-
 def Exy(x, y):
+    A = [-200, -100, -170, 15]
+    a = [-1, -1, -6.5, 0.7]
+    b = [0, 0, 11, 0.6]
+    c = [-10, -10, -6.5, 0.7]
+    X = [1, 0, -0.5, -1]
+    Y = [0, 0.5, 1.5, 1]
+
     Exy = 0
     for i in range(4):
-        Exy += A[i] * math.exp(
+        Exy += A[i] * np.exp(
             a[i] * ((x - X[i]) ** 2)
             + b[i] * (x - X[i]) * (y - Y[i])
             + c[i] * ((y - Y[i]) ** 2)
@@ -70,7 +73,9 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax):
     )
 
     p = figure(
-        tooltips=[("X", "$x"), ("Y", "$y"), ("value", "@image")], width=700, height=500
+        tooltips=[("X", "$x"), ("Y", "$y"), ("value", "@image")],
+        width=700,
+        height=515,
     )
     p.x_range.range_padding = p.y_range.range_padding = 0
 
@@ -87,9 +92,9 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax):
         color_mapper=exp_cmap,
         level="image",
     )
-    p.grid.grid_line_width = 0.5
+    p.grid.grid_line_width = 0
 
-    levels = np.linspace(-147, 100, color_tone)
+    levels = np.linspace(-147, 100, color_tone + 1)
 
     color_bar = ColorBar(
         color_mapper=exp_cmap,
@@ -104,24 +109,70 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax):
     p.add_layout(color_bar, "right")
 
     for level in levels:
+
+        if level == levels[-1]:
+            break
+
         contours = measure.find_contours(Z_list_meshed, level)
         for contour in contours:
 
             x = contour[:, 1] / 20 + xmin
             y = contour[:, 0] / 20 + ymin
-            p.line(x, y, color="grey", line_width=1, alpha=0.7)
+            p.line(x, y, color="grey", line_width=1, alpha=1)
+
+    data_set = np.loadtxt(fname="graph1.csv", dtype="float", delimiter=",")
+
+    p_x1 = []
+    p_y1 = []
+
+    for data in data_set:
+        p_x1.append(data[0])
+        p_y1.append(data[1])
+
+    p.line(p_x1, p_y1, line_width=2, color="deepskyblue", alpha=0.5)
+
+    p.circle(p_x1[-1], p_y1[-1], color="orange", line_width=4)
 
     data_set = np.loadtxt(fname="graph2.csv", dtype="float", delimiter=",")
 
-    p_x = []
-    p_y = []
+    p_x2 = []
+    p_y2 = []
 
     for data in data_set:
-        p_x.append(data[0])
-        p_y.append(data[1])
-    # x_vol = len(p_x)
-    # y_vol = len(p_y)
+        p_x2.append(data[0])
+        p_y2.append(data[1])
 
-    p.line(p_x, p_y, line_width=2, color="cyan", alpha=0.5)
+    p.line(p_x2, p_y2, line_width=2, color="cyan", alpha=0.5)
 
+    p.add_layout(
+        Title(
+            text=(
+                "TS:"
+                + " x="
+                + str(p_x1[-1])
+                + " y="
+                + str(p_y1[-1])
+                + " Energy:"
+                + "{:.6f}".format(Exy(p_x1[-1], p_y1[-1]))
+            ),
+            align="center",
+        ),
+        "below",
+    )
+
+    p.add_layout(
+        Title(
+            text=(
+                "EQ:"
+                + " x="
+                + str(p_x2[-1])
+                + " y="
+                + str(p_y2[-1])
+                + " Energy:"
+                + "{:.6f}".format(Exy(p_x2[-1], p_y2[-1]))
+            ),
+            align="center",
+        ),
+        "below",
+    )
     return p

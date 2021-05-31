@@ -1,3 +1,4 @@
+from fastapi.params import File
 from starlette.requests import Request
 import uvicorn
 
@@ -184,6 +185,7 @@ class Params(BaseModel):
     interval: float = 0.1
     x: float = -0.75
     y: float = 0.55
+    # file: File
 
 
 @app.post("/api4")
