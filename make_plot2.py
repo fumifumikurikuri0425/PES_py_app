@@ -33,7 +33,7 @@ def Exy(x, y):
     return Exy
 
 
-def make_plot(color_tone, interval, xmin, xmax, ymin, ymax):
+def make_plot(color_tone, interval, xmin, xmax, ymin, ymax, zmin, zmax):
 
     # x,y,zの配列を生成
     np.set_printoptions(precision=6, floatmode="fixed", suppress=True)
@@ -75,15 +75,15 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax):
     p = figure(
         tooltips=[("X", "$x"), ("Y", "$y"), ("value", "@image")],
         width=700,
-        height=515,
+        height=530,
     )
     p.x_range.range_padding = p.y_range.range_padding = 0
 
     exp_cmap = LinearColorMapper(
-        palette=palettes.inferno(color_tone), low=-147, high=100
+        palette=palettes.inferno(color_tone), low=zmin, high=zmax
     )
 
-    p.image(
+    image = p.image(
         image=[Z_list_meshed],
         x=xmin,
         y=ymin,
@@ -94,7 +94,7 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax):
     )
     p.grid.grid_line_width = 0
 
-    levels = np.linspace(-147, 100, color_tone + 1)
+    levels = np.linspace(zmin, zmax, color_tone + 1)
 
     color_bar = ColorBar(
         color_mapper=exp_cmap,
@@ -108,6 +108,12 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax):
 
     p.add_layout(color_bar, "right")
 
+    print(image)
+
+    print(Z_list_meshed.shape)
+    x_shape = Z_list_meshed.shape[1] - 1
+    y_shape = Z_list_meshed.shape[0] - 1
+
     for level in levels:
 
         if level == levels[-1]:
@@ -116,8 +122,9 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax):
         contours = measure.find_contours(Z_list_meshed, level)
         for contour in contours:
 
-            x = contour[:, 1] / 20 + xmin
-            y = contour[:, 0] / 20 + ymin
+            x = contour[:, 1] / x_shape * (xmax - xmin) + xmin
+            y = contour[:, 0] / y_shape * (ymax - ymin) + ymin
+
             p.line(x, y, color="grey", line_width=1, alpha=1)
 
     data_set = np.loadtxt(fname="graph1.csv", dtype="float", delimiter=",")
@@ -129,9 +136,9 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax):
         p_x1.append(data[0])
         p_y1.append(data[1])
 
-    p.line(p_x1, p_y1, line_width=2, color="deepskyblue", alpha=0.5)
+    p.line(p_x1, p_y1, line_width=2, color="#2ECFCA", alpha=0.5)
 
-    p.circle(p_x1[-1], p_y1[-1], color="orange", line_width=4)
+    p.circle(p_x1[-1], p_y1[-1], color="lime", line_width=4)
 
     data_set = np.loadtxt(fname="graph2.csv", dtype="float", delimiter=",")
 
@@ -153,7 +160,7 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax):
                 + " y="
                 + str(p_y1[-1])
                 + " Energy:"
-                + "{:.6f}".format(Exy(p_x1[-1], p_y1[-1]))
+                + " {:.6f}".format(Exy(p_x1[-1], p_y1[-1]))
             ),
             align="center",
         ),
@@ -169,7 +176,7 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax):
                 + " y="
                 + str(p_y2[-1])
                 + " Energy:"
-                + "{:.6f}".format(Exy(p_x2[-1], p_y2[-1]))
+                + " {:.6f}".format(Exy(p_x2[-1], p_y2[-1]))
             ),
             align="center",
         ),
