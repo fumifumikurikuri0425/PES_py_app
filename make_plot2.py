@@ -136,7 +136,7 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax, zmin, zmax):
         p_x1.append(data[0])
         p_y1.append(data[1])
 
-    p.line(p_x1, p_y1, line_width=2, color="#2ECFCA", alpha=0.5)
+    p.line(p_x1, p_y1, line_width=2, color="#3949AB", alpha=0.5)
 
     p.circle(p_x1[-1], p_y1[-1], color="lime", line_width=4)
 
