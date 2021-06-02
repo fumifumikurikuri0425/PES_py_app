@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
-    <title>Muller Brown Potential</title>
+    <title>Potential Energy Surface</title>
     {{ js_resources|safe }} {{ css_resources|safe }}
 </head>
 
@@ -12,7 +12,7 @@
 <div id="pagebody">
     <header>
         <h1>
-            <a href="/">Muller Brown Potential</a>
+            <a href="/">Potential Energy Surface</a>
         </h1>
     </header>
 
@@ -32,6 +32,30 @@
 
         <div>
         Initial y: <input name="y" type="text" size="10" value="{{y}}" required></input>
+        </div>
+
+        <div>
+        xmin: <input name="xmin" type="text" size="10" value="{{xmin}}" required></input>
+        </div>
+
+        <div>
+        xmax: <input name="xmax" type="text" size="10" value="{{xmax}}" required></input>
+        </div>
+
+        <div>
+        ymin: <input name="ymin" type="text" size="10" value="{{ymin}}" required></input>
+        </div>
+
+        <div>
+        ymax: <input name="ymax" type="text" size="10" value="{{ymax}}" required></input>
+        </div>
+
+        <div>
+        zmin: <input name="zmin" type="text" size="10" value="{{zmin}}" required></input>
+        </div>
+
+        <div>
+        zmax: <input name="zmax" type="text" size="10" value="{{zmax}}" required></input>
         </div>
 
         <div>

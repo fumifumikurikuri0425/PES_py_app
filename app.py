@@ -1,3 +1,4 @@
+from fastapi.params import File
 from starlette.requests import Request
 import uvicorn
 
@@ -27,7 +28,7 @@ templates = Jinja2Templates(directory="templates")
 async def read_item_1(
     request: Request,
     # intervalのデフォルトは0.05
-    interval: float = 0.05,
+    interval: float = 0.01,
     x: float = -0.75,
     y: float = 0.55,
     tone: int = 20,
@@ -37,6 +38,8 @@ async def read_item_1(
     xmax: float = 1.5,
     ymin: float = -1,
     ymax: float = 3,
+    zmin: float = -147,
+    zmax: float = 100,
 ):
     # グラフを作成する。
     print("colortone:", tone)
@@ -50,7 +53,7 @@ async def read_item_1(
     check_value = check
     print("check_value:", check_value)
     make_data(x, y, check_value, step)
-    fig = make_plot(tone, interval, xmin, xmax, ymin, ymax)
+    fig = make_plot(tone, interval, xmin, xmax, ymin, ymax, zmin, zmax)
 
     script, div = components(fig, INLINE)
     # print(script)
@@ -73,6 +76,8 @@ async def read_item_1(
             "xmax": xmax,
             "ymin": ymin,
             "ymax": ymax,
+            "zmin": zmin,
+            "zmax": zmax,
         },
     )
 
