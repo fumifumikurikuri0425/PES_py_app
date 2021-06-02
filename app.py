@@ -1,3 +1,4 @@
+from utils import create_test_data
 from fastapi.params import File
 from starlette.requests import Request
 import uvicorn
@@ -207,20 +208,23 @@ async def post_api4(
     ymax: float = Form(3),
 ):
 
-    # f = await request.form(Params)
-    # request: Request,
-    print(file)
-    print(interval)
-
-    # params = Params(interval=0.5)
-    # print(interval)
-
-    return {
-        # "interval": interval,
-        "params": interval,
-        # "x": x,
-        # "request": request
+    params = {
+        "interval": interval,
+        "x": x,
+        "y": y,
+        "tone": tone,
+        "check": check,
+        "step": step,
+        "xmin": xmin,
+        "xmax": xmax,
+        "ymin": ymin,
+        "ymax": ymax,
     }
+
+    # TODO: calculate values here!!!
+    X_list, Y_list, Z_list = create_test_data(xmin, xmax, ymin, ymax, interval)
+
+    return {"params": params, "data": [X_list, Y_list, Z_list]}
 
 
 origins = ["http://localhost", "http://localhost:8080", "http://localhost:3000", "ssss"]
