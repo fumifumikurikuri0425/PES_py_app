@@ -1,11 +1,12 @@
 from starlette.requests import Request
 import uvicorn
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, File, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Optional
 
 from bokeh.embed import components
 from bokeh.resources import INLINE
@@ -182,21 +183,42 @@ async def read_item_3(
 
 class Params(BaseModel):
     interval: float = 0.1
-    x: float = -0.75
-    y: float = 0.55
+    x: Optional[float] = -0.75
+    y: Optional[float] = 0.55
 
 
-@app.post("/api4")
-def post_api4(params: Params):
+@app.post("/api/test")
+async def post_api4(
+    file: Optional[bytes] = File(None),
+    interval: float = Form(0.05),
+    x: float = Form(-0.75),
+    y: float = Form(0.55),
+    tone: int = Form(20),
+    check: int = Form(0),
+    step: float = Form(0.01),
+    xmin: float = Form(-2.5),
+    xmax: float = Form(1.5),
+    ymin: float = Form(-1),
+    ymax: float = Form(3),
+):
 
-    return {"test": params}
+    # f = await request.form(Params)
+    # request: Request,
+    print(file)
+    print(interval)
+
+    # params = Params(interval=0.5)
+    # print(interval)
+
+    return {
+        # "interval": interval,
+        "params": interval,
+        # "x": x,
+        # "request": request
+    }
 
 
-origins = [
-    "http://localhost",
-    "http://localhost:8080",
-    "http://localhost:3000",
-]
+origins = ["http://localhost", "http://localhost:8080", "http://localhost:3000", "ssss"]
 
 app.add_middleware(
     CORSMiddleware,

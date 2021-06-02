@@ -13,6 +13,7 @@ jinja2 = "*"
 pandas = "*"
 bokeh = "*"
 scikit-image = "*"
+python-multipart = "*"
 
 [dev-packages]
 black = "==21.5b0"
