@@ -1,4 +1,3 @@
-from utils import create_test_data
 from fastapi.params import File
 from starlette.requests import Request
 import uvicorn
@@ -10,12 +9,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 
+import numpy as np
+
 from bokeh.embed import components
 from bokeh.resources import INLINE
 from bokeh.embed import json_item
 
 from make_plot2 import make_plot
 from graph2 import make_data
+
+from utils import create_test_data, get_meshgrid_from_xyzArray
 
 
 app = FastAPI()
@@ -223,8 +226,16 @@ async def post_api4(
 
     # TODO: calculate values here!!!
     X_list, Y_list, Z_list = create_test_data(xmin, xmax, ymin, ymax, interval)
+    X_list_meshed, Y_list_meshed, Z_list_meshed = get_meshgrid_from_xyzArray(
+        X_list, Y_list, Z_list
+    )
 
-    return {"params": params, "data": [X_list, Y_list, Z_list]}
+    print(Z_list_meshed)
+    print(type(Z_list_meshed))
+
+    return {"params": params, "data": {
+        "energy": Z_list_meshed.tolist(),
+    }}
 
 
 origins = ["http://localhost", "http://localhost:8080", "http://localhost:3000", "ssss"]
