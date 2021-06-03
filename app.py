@@ -27,11 +27,12 @@ templates = Jinja2Templates(directory="templates")
 async def read_item_1(
     request: Request,
     # intervalのデフォルトは0.05
-    interval: float = 0.01,
+    interval: float = 0.05,
     x: float = -0.75,
     y: float = 0.55,
     tone: int = 20,
     check: int = 0,
+    judge: bool = False,
     step: float = 0.01,
     xmin: float = -2.5,
     xmax: float = 1.5,
@@ -51,8 +52,10 @@ async def read_item_1(
 
     check_value = check
     print("check_value:", check_value)
-    make_data(x, y, check_value, step)
-    fig = make_plot(tone, interval, xmin, xmax, ymin, ymax, zmin, zmax)
+    print("judge", judge)
+    if judge:
+        make_data(x, y, check_value, step)
+    fig = make_plot(tone, interval, xmin, xmax, ymin, ymax, zmin, zmax, judge)
 
     script, div = components(fig, INLINE)
     # print(script)
@@ -71,6 +74,7 @@ async def read_item_1(
             "y": y,
             "tone": tone,
             "check": check,
+            "judge": judge,
             "xmin": xmin,
             "xmax": xmax,
             "ymin": ymin,
