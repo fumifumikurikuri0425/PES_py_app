@@ -1,8 +1,7 @@
-from fastapi.params import File
 from starlette.requests import Request
 import uvicorn
 
-from fastapi import FastAPI, Request, File, Form
+from fastapi import FastAPI, Request, File, Form, UploadFile
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,6 +16,7 @@ from bokeh.embed import json_item
 
 from make_plot2 import make_plot
 from graph2 import make_data
+from PES_from_file import make_graph_from_file
 
 from utils import create_test_data, get_meshgrid_from_xyzArray
 
@@ -32,11 +32,12 @@ templates = Jinja2Templates(directory="templates")
 async def read_item_1(
     request: Request,
     # intervalのデフォルトは0.05
-    interval: float = 0.01,
+    interval: float = 0.05,
     x: float = -0.75,
     y: float = 0.55,
     tone: int = 20,
     check: int = 0,
+    judge: bool = False,
     step: float = 0.01,
     xmin: float = -2.5,
     xmax: float = 1.5,
@@ -56,8 +57,11 @@ async def read_item_1(
 
     check_value = check
     print("check_value:", check_value)
-    make_data(x, y, check_value, step)
-    fig = make_plot(tone, interval, xmin, xmax, ymin, ymax, zmin, zmax)
+    print("judge", judge)
+    if judge:
+        make_data(x, y, check_value, step)
+    fig = make_plot(tone, interval, xmin, xmax, ymin, ymax, zmin, zmax, judge)
+    #fig = make_graph_from_file(tone, zmax)
 
     script, div = components(fig, INLINE)
     # print(script)
@@ -76,6 +80,96 @@ async def read_item_1(
             "y": y,
             "tone": tone,
             "check": check,
+            "judge": judge,
+            "xmin": xmin,
+            "xmax": xmax,
+            "ymin": ymin,
+            "ymax": ymax,
+            "zmin": zmin,
+            "zmax": zmax,
+        },
+    )
+
+@app.get('/post_version')
+def get_test(request: Request):
+        return templates.TemplateResponse(
+        "index_post.html",
+        {
+            "request": request,
+            # "plot_div": div,
+            # "plot_script": script,
+            # "step": step,
+            # "x": x,
+            # "y": y,
+            # "tone": tone,
+            # "check": check,
+            # "judge": judge,
+            # "xmin": xmin,
+            # "xmax": xmax,
+            # "ymin": ymin,
+            # "ymax": ymax,
+            # "zmin": zmin,
+            # "zmax": zmax,
+        },
+    )
+
+
+@app.post('/post_version')
+async def post_test(
+    request: Request,
+    file: UploadFile = File(...),
+    interval: float = Form(0.1),
+    x: float = Form(-0.75),
+    y: float = Form(0.55),
+    tone: int = Form(10),
+    check: int = Form(0),
+    judge: bool = Form(False),
+    step: float = Form(0.01),
+    xmin: float = Form(-2.5),
+    xmax: float = Form(1.5),
+    ymin: float = Form(-1),
+    ymax: float = Form(3),
+    zmin: float = Form(-147),
+    zmax: float = Form(100),
+):
+    print('file: ', file)
+    # print(len(file))
+
+    # グラフを作成する。
+    print("colortone:", tone)
+    print("interval:", interval)
+    print("x=", x, "y=", y)
+    print("step=", step)
+
+    js_resources = INLINE.render_js()
+    css_resources = INLINE.render_css()
+
+    check_value = check
+    print("check_value:", check_value)
+    print("judge", judge)
+    if judge:
+        make_data(x, y, check_value, step)
+    #fig = make_plot(tone, interval, xmin, xmax, ymin, ymax, zmin, zmax, judge)
+    # fig = make_graph_from_file(file.file, tone, zmax)
+
+    # script, div = components(fig, INLINE)
+    # print(script)
+    # print(div)
+
+    return templates.TemplateResponse(
+        "index_post.html",
+        {
+            "request": request,
+            "js_resources": js_resources,
+            "css_resources": css_resources,
+            "plot_div": div,
+            "plot_script": script,
+            "step": step,
+            "x": x,
+            "y": y,
+            "tone": tone,
+            "check": check,
+            "judge": judge,
             "xmin": xmin,
             "xmax": xmax,
             "ymin": ymin,
