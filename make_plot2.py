@@ -14,6 +14,7 @@ from bokeh.models import (
     PrintfTickFormatter,
     Title,
 )
+
 from bokeh.resources import CDN
 
 
@@ -128,9 +129,9 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax, zmin, zmax, judge):
                         continue
                     mz[iy][ix] = zar[idx]
         mx, my = np.meshgrid(xuniq, yuniq)
-        return mx, my, mz
+        return  mz
 
-    X_list_meshed,X_list_meshed,Z_list_meshed = get_meshgrid_from_xyzArray(
+    Z_list_meshed = get_meshgrid_from_xyzArray(
         X_list, Y_list, Z_list
     )
 
@@ -142,10 +143,10 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax, zmin, zmax, judge):
     p.x_range.range_padding = p.y_range.range_padding = 0
     #choose colors from cividis, gray, inferno, magma, viridis
     exp_cmap = LinearColorMapper(
-        palette=palettes.magma(color_tone), low=zmin, high=zmax
+        palette=palettes.inferno(color_tone), low=zmin, high=zmax
     )
 
-    image = p.image(
+    p.image(
         image=[Z_list_meshed],
         x=xmin,
         y=ymin,
@@ -170,7 +171,6 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax, zmin, zmax, judge):
 
     p.add_layout(color_bar, "right")
 
-    #Z_list_meshed = list(Z_list_meshed)
     x_shape = Z_list_meshed.shape[1] - 1
     y_shape = Z_list_meshed.shape[0] - 1
 
