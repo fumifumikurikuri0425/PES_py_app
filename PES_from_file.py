@@ -17,8 +17,8 @@ from bokeh.models import (
 
 from bokeh.resources import CDN
 
-def make_graph_from_file(file, color_tone, zmax):
-    data_set = np.loadtxt(fname=file, dtype="float", delimiter=",")
+def make_graph_from_file(color_tone, zmax):
+    data_set = np.loadtxt(fname="MBP.csv", dtype="float", delimiter=",")
 
     X_list=[]
     Y_list=[]
@@ -29,28 +29,15 @@ def make_graph_from_file(file, color_tone, zmax):
             Y_list.append(data[1])
             Z_list.append(data[2])
 
-    def get_meshgrid_from_xyzArray(xar, yar, zar):
-            # mx, my, mz : in meshgrid
-            xuniq = np.unique(xar)
-            yuniq = np.unique(yar)
-            mz = np.empty([len(yuniq), len(xuniq)])
-            for ix in range(len(xuniq)):
-                for iy in range(len(yuniq)):
-                    xx, yy = xuniq[ix], yuniq[iy]
-                    for idx in range(len(xar)):
-                        tx, ty = xar[idx], yar[idx]
-                        if abs(tx - xx) >= sys.float_info.epsilon:
-                            continue
-                        if abs(ty - yy) >= sys.float_info.epsilon:
-                            continue
-                        mz[iy][ix] = zar[idx]
-            mx, my = np.meshgrid(xuniq, yuniq)
-            return  mz
+    x_count = len(np.unique(X_list))
+    y_count = len(np.unique(Y_list))
+    z_count = len(Z_list)
+    print(x_count, y_count, z_count)
 
-    Z_list_meshed = get_meshgrid_from_xyzArray(
-            X_list, Y_list, Z_list
-        )
+    Z_list_meshed = np.reshape(Z_list, (x_count, y_count))
+    Z_list_meshed = np.transpose(Z_list_meshed)
 
+    print(Z_list_meshed)
     xmin=min(X_list)
     xmax=max(X_list)
     ymin=min(Y_list)

@@ -33,8 +33,8 @@ def Exy(x, y):
             + b[i] * (x - X[i]) * (y - Y[i])
             + c[i] * ((y - Y[i]) ** 2)
         )
-
     return Exy
+
 
 
 def make_optimize_line(p):
@@ -101,39 +101,22 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax, zmin, zmax, judge):
     # x,y,zの配列を生成
     np.set_printoptions(precision=6, floatmode="fixed", suppress=True)
 
-    X_list = []
-    Y_list = []
+    X_list = [i for i in np.arange(xmin, xmax + 0.01, interval)]
+    Y_list = [i for i in np.arange(ymin, ymax + 0.01, interval)]
     Z_list = []
 
-    for i, x in enumerate(np.arange(xmin, xmax + 0.01, interval)):
-        for j, y in enumerate(np.arange(ymin, ymax + 0.01, interval)):
-            X_list.append(float(x))
-            Y_list.append(float(y))
+    for x in X_list:
+        for y in Y_list:
             MBP = Exy(x, y)
-            MBP = "{:.6f}".format(MBP)
             Z_list.append(float(MBP))
+    print("calculate1 finished!")
 
-    def get_meshgrid_from_xyzArray(xar, yar, zar):
-        # mx, my, mz : in meshgrid
-        xuniq = np.unique(xar)
-        yuniq = np.unique(yar)
-        mz = np.empty([len(yuniq), len(xuniq)])
-        for ix in range(len(xuniq)):
-            for iy in range(len(yuniq)):
-                xx, yy = xuniq[ix], yuniq[iy]
-                for idx in range(len(xar)):
-                    tx, ty = xar[idx], yar[idx]
-                    if abs(tx - xx) >= sys.float_info.epsilon:
-                        continue
-                    if abs(ty - yy) >= sys.float_info.epsilon:
-                        continue
-                    mz[iy][ix] = zar[idx]
-        mx, my = np.meshgrid(xuniq, yuniq)
-        return  mz
+    x_count = len(np.unique(X_list))
+    y_count = len(np.unique(Y_list))
 
-    Z_list_meshed = get_meshgrid_from_xyzArray(
-        X_list, Y_list, Z_list
-    )
+    Z_list_meshed = np.reshape(Z_list, (x_count, y_count))
+    Z_list_meshed = np.transpose(Z_list_meshed)
+    print("calculate2 finished!")
 
     p = figure(
         tooltips=[("X", "$x"), ("Y", "$y"), ("value", "@image")],

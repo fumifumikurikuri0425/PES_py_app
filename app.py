@@ -27,7 +27,7 @@ templates = Jinja2Templates(directory="templates")
 async def read_item_1(
     request: Request,
     # intervalのデフォルトは0.05
-    interval: float = 0.05,
+    interval: float = 0.01,
     x: float = -0.75,
     y: float = 0.55,
     tone: int = 20,
@@ -57,6 +57,7 @@ async def read_item_1(
         make_data(x, y, check_value, step)
     fig = make_plot(tone, interval, xmin, xmax, ymin, ymax, zmin, zmax, judge)
     #fig = make_graph_from_file(tone, zmax)
+    print("fig finished!")
 
     script, div = components(fig, INLINE)
     # print(script)
