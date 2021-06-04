@@ -96,7 +96,7 @@ async def read_item_1(
 @app.post("/post_version")
 async def post_test(
     request: Request,
-    file: UploadFile = File(...),
+    # file: UploadFile = File(...),
     interval: float = Form(0.1),
     x: float = Form(-0.75),
     y: float = Form(0.55),
@@ -113,9 +113,9 @@ async def post_test(
 ):
 
     # file = request.files['file']
-    print("file: ", file)
-    print(file.file)
-    print(file.filename)
+    # print("file: ", file)
+    # print(file.file)
+    # print(file.filename)
     # print(len(file))
 
     # グラフを作成する。
@@ -276,7 +276,7 @@ class Params(BaseModel):
 @app.post("/api/test")
 async def post_api4(
     file: Optional[bytes] = File(None),
-    interval: float = Form(0.05),
+    resolution: float = Form(300),
     x: float = Form(-0.75),
     y: float = Form(0.55),
     tone: int = Form(20),
@@ -289,7 +289,7 @@ async def post_api4(
 ):
 
     params = {
-        "interval": interval,
+        "resolution": resolution,
         "x": x,
         "y": y,
         "tone": tone,
@@ -301,8 +301,10 @@ async def post_api4(
         "ymax": ymax,
     }
 
+    print(params)
+
     # TODO: calculate values here!!!
-    X_list, Y_list, Z_list = create_test_data(xmin, xmax, ymin, ymax, interval)
+    X_list, Y_list, Z_list = create_test_data(xmin, xmax, ymin, ymax, resolution)
     Z_list_meshed = get_meshgrid_from_xyzArray(X_list, Y_list, Z_list)
 
     print(Z_list_meshed)
@@ -316,7 +318,11 @@ async def post_api4(
     }
 
 
-origins = ["http://localhost", "http://localhost:8080", "http://localhost:3000", "ssss"]
+origins = [
+    "http://localhost",
+    "http://localhost:8080",
+    "http://localhost:3000",
+]
 
 app.add_middleware(
     CORSMiddleware,

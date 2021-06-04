@@ -12,13 +12,14 @@ def get_meshgrid_from_xyzArray(xar, yar, zar):
     return Z_list_meshed
 
 
-def create_test_data(xmin, xmax, ymin, ymax, interval):
+def create_test_data(xmin, xmax, ymin, ymax, resolution):
     np.set_printoptions(precision=6, floatmode="fixed", suppress=True)
 
-    np.set_printoptions(precision=6, floatmode="fixed", suppress=True)
+    X_list = np.linspace(xmin, xmax, resolution)
+    Y_list = np.linspace(ymin, ymax, resolution)
+    print(X_list)
+    print(Y_list)
 
-    X_list = [i for i in np.arange(xmin, xmax + 0.01, interval)]
-    Y_list = [i for i in np.arange(ymin, ymax + 0.01, interval)]
     Z_list = []
 
     for x in X_list:
