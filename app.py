@@ -93,10 +93,71 @@ async def read_item_1(
 
 
 @app.get("/post_version")
+def get_test(
+    request: Request,
+    interval: float = Form(0.1),
+    x: float = Form(-0.75),
+    y: float = Form(0.55),
+    tone: int = Form(10),
+    check: int = Form(0),
+    judge: bool = Form(False),
+    step: float = Form(0.01),
+    xmin: float = Form(-2.5),
+    xmax: float = Form(1.5),
+    ymin: float = Form(-1),
+    ymax: float = Form(3),
+    zmin: float = Form(-147),
+    zmax: float = Form(100),
+):
+    # グラフを作成する。
+    print("colortone:", tone)
+    print("interval:", interval)
+    print("x=", x, "y=", y)
+    print("step=", step)
+
+    js_resources = INLINE.render_js()
+    css_resources = INLINE.render_css()
+
+    check_value = check
+    print("check_value:", check_value)
+    print("judge", judge)
+    if judge:
+        make_data(x, y, check_value, step)
+    fig = make_plot(tone, interval, xmin, xmax, ymin, ymax, zmin, zmax, judge)
+    # fig = make_graph_from_file(file.file, tone, zmax)
+
+    script, div = components(fig, INLINE)
+    # print(script)
+    # print(div)
+
+    return templates.TemplateResponse(
+        "index_post.html",
+        {
+            "request": request,
+            "js_resources": js_resources,
+            "css_resources": css_resources,
+            "plot_div": div,
+            "plot_script": script,
+            "step": step,
+            "x": x,
+            "y": y,
+            "tone": tone,
+            "check": check,
+            "judge": judge,
+            "xmin": xmin,
+            "xmax": xmax,
+            "ymin": ymin,
+            "ymax": ymax,
+            "zmin": zmin,
+            "zmax": zmax,
+        },
+    )
+
+
 @app.post("/post_version")
 async def post_test(
     request: Request,
-    # file: UploadFile = File(...),
+    file: UploadFile = File(...),
     interval: float = Form(0.1),
     x: float = Form(-0.75),
     y: float = Form(0.55),
@@ -112,10 +173,9 @@ async def post_test(
     zmax: float = Form(100),
 ):
 
-    # file = request.files['file']
     # print("file: ", file)
-    # print(file.file)
-    # print(file.filename)
+    print(file.file)
+    print(file.filename)
     # print(len(file))
 
     # グラフを作成する。
@@ -147,6 +207,7 @@ async def post_test(
             "css_resources": css_resources,
             "plot_div": div,
             "plot_script": script,
+            "file": file,
             "step": step,
             "x": x,
             "y": y,
