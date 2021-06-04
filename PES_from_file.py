@@ -18,6 +18,7 @@ from bokeh.models import (
 from bokeh.resources import CDN
 
 def make_graph_from_file(color_tone, zmax):
+
     data_set = np.loadtxt(fname="MBP.csv", dtype="float", delimiter=",")
 
     X_list=[]

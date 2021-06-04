@@ -48,7 +48,9 @@ def make_optimize_line(p):
         p_x1.append(data[0])
         p_y1.append(data[1])
 
-    p.line(p_x1, p_y1, line_width=2, color="#03A9F4", alpha=0.5)
+    p.circle(p_x1[0], p_y1[0], color="pink", line_width=4)
+
+    p.line(p_x1, p_y1, line_width=2, color="#009688", alpha=0.5)
 
     p.circle(p_x1[-1], p_y1[-1], color="lime", line_width=4)
 
@@ -98,7 +100,6 @@ def make_optimize_line(p):
 
 def make_plot(color_tone, interval, xmin, xmax, ymin, ymax, zmin, zmax, judge):
 
-    # x,y,zの配列を生成
     np.set_printoptions(precision=6, floatmode="fixed", suppress=True)
 
     X_list = [i for i in np.arange(xmin, xmax + 0.01, interval)]

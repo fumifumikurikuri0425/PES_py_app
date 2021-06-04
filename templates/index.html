@@ -23,7 +23,7 @@
 
     <form id="form1">
         <div>
-        step: <input name="step" type="number" step="any" min="1e-9" size="7" value="{{ step }}" required></input>
+        Newton Raphson step: <input name="step" type="number" step="any" min="1e-9" size="7" value="{{ step }}" required></input>
         </div>
 
         <div>
@@ -32,6 +32,14 @@
 
         <div>
         Initial y: <input name="y" type="text" size="10" value="{{y}}" required></input>
+        </div>
+
+        <div>
+        {% if judge%}
+            <label>Optomaized Line : <input name="judge" type="checkbox" checked></input></label>
+        {%else%}
+            <label>Optomaized Line : <input name="judge" type="checkbox"></input></label>
+        {%endif%}
         </div>
 
         <div>

@@ -60,8 +60,6 @@ async def read_item_1(
     print("fig finished!")
 
     script, div = components(fig, INLINE)
-    # print(script)
-    # print(div)
 
     return templates.TemplateResponse(
         "index.html",

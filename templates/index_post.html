@@ -27,7 +27,7 @@
         </div> {% endcomment %}
 
         <div>
-        step: <input name="step" type="number" step="any" min="1e-9" size="7" value="{{ step }}" required></input>
+        Newton Raphson step: <input name="step" type="number" step="any" min="1e-9" size="7" value="{{ step }}" required></input>
         </div>
 
         <div>
@@ -36,6 +36,14 @@
 
         <div>
         Initial y: <input name="y" type="text" size="10" value="{{y}}" required></input>
+        </div>
+
+        <div>
+        {% if judge==True%}
+            <label>Optomaized Line : <input name="judge" type="checkbox" checked></input></label>
+        {%else%}
+            <label>Optomaized Line : <input name="judge" type="checkbox"></input></label>
+        {%endif%}
         </div>
 
         <div>
@@ -69,16 +77,12 @@
         <div>
         saddle point:
         {% if check==0 %}
-        <label>left  <input type="radio" name="check" value="{{0}}" checked></label>
-        <label> right  <input type="radio" name="check" value="{{1}}"></label>
+            <label>left  <input type="radio" name="check" value="{{0}}" checked></label>
+            <label> right  <input type="radio" name="check" value="{{1}}"></label>
         {% else %}
-        <label>left  <input type="radio" name="check" value="{{0}}" ></label>
-        <label> right  <input type="radio" name="check" value="{{1}}" checked></label>
+            <label>left  <input type="radio" name="check" value="{{0}}" ></label>
+            <label> right  <input type="radio" name="check" value="{{1}}" checked></label>
         {% endif %}
-        </div>
-
-        <div>
-        <label>Optomaized Line : <input name="judge" type="checkbox" ></input></label>
         </div>
 
         <input class="btn" type="submit" value="submit"><br>
