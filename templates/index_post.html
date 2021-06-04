@@ -21,10 +21,10 @@
     </div>
 
 
-    <form id="form1" encrype="multipart/form-data" method="POST">
-        {% comment %} <div>
-        file: <input name="file" accept="text/csv" type="file"></input>
-        </div> {% endcomment %}
+    <form id="form1" enctype="multipart/form-data" method="POST">
+        <div>
+        file: <input name="file" type="file"></input>
+        </div>
 
         <div>
         Newton Raphson step: <input name="step" type="number" step="any" min="1e-9" size="7" value="{{ step }}" required></input>
