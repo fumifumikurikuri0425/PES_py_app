@@ -4,36 +4,26 @@ import numpy as np
 
 def get_meshgrid_from_xyzArray(xar, yar, zar):
     # mx, my, mz : in meshgrid
-    xuniq = np.unique(xar)
-    yuniq = np.unique(yar)
-    mz = np.empty([len(yuniq), len(xuniq)])
-    for ix in range(len(xuniq)):
-        for iy in range(len(yuniq)):
-            xx, yy = xuniq[ix], yuniq[iy]
-            for idx in range(len(xar)):
-                tx, ty = xar[idx], yar[idx]
-                if abs(tx - xx) >= sys.float_info.epsilon:
-                    continue
-                if abs(ty - yy) >= sys.float_info.epsilon:
-                    continue
-                mz[iy][ix] = zar[idx]
-    mx, my = np.meshgrid(xuniq, yuniq)
-    return mx, my, mz
+    x_count = len(np.unique(xar))
+    y_count = len(np.unique(yar))
+
+    Z_list_meshed = np.reshape(zar, (x_count, y_count))
+    Z_list_meshed = np.transpose(Z_list_meshed)
+    return Z_list_meshed
 
 
 def create_test_data(xmin, xmax, ymin, ymax, interval):
     np.set_printoptions(precision=6, floatmode="fixed", suppress=True)
 
-    X_list = []
-    Y_list = []
+    np.set_printoptions(precision=6, floatmode="fixed", suppress=True)
+
+    X_list = [i for i in np.arange(xmin, xmax + 0.01, interval)]
+    Y_list = [i for i in np.arange(ymin, ymax + 0.01, interval)]
     Z_list = []
 
-    for i, x in enumerate(np.arange(xmin, xmax + 0.01, interval)):
-        for j, y in enumerate(np.arange(ymin, ymax + 0.01, interval)):
-            X_list.append(float(x))
-            Y_list.append(float(y))
+    for x in X_list:
+        for y in Y_list:
             MBP = Exy(x, y)
-            MBP = "{:.6f}".format(MBP)
             Z_list.append(float(MBP))
 
     return X_list, Y_list, Z_list

@@ -303,9 +303,7 @@ async def post_api4(
 
     # TODO: calculate values here!!!
     X_list, Y_list, Z_list = create_test_data(xmin, xmax, ymin, ymax, interval)
-    X_list_meshed, Y_list_meshed, Z_list_meshed = get_meshgrid_from_xyzArray(
-        X_list, Y_list, Z_list
-    )
+    Z_list_meshed = get_meshgrid_from_xyzArray(X_list, Y_list, Z_list)
 
     print(Z_list_meshed)
     print(type(Z_list_meshed))
