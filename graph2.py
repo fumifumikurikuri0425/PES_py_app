@@ -1,25 +1,12 @@
 import numpy as np
 
 
-def make_data(first_x, first_y, check, step):
+def make_data(first_x, first_y, check, step,func):
 
 
 
     def Exy(x, y):
-        A = [-200, -100, -170, 15]
-        a = [-1, -1, -6.5, 0.7]
-        b = [0, 0, 11, 0.6]
-        c = [-10, -10, -6.5, 0.7]
-        X = [1, 0, -0.5, -1]
-        Y = [0, 0.5, 1.5, 1]
-
-        Exy = 0
-        for i in range(4):
-            Exy += A[i] * np.exp(
-                a[i] * ((x - X[i]) ** 2)
-                + b[i] * (x - X[i]) * (y - Y[i])
-                + c[i] * ((y - Y[i]) ** 2)
-            )
+        Exy = func(x,y)
         return Exy
 
     # 1階微分

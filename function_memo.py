@@ -1,4 +1,6 @@
-def Exy(x, y):
+import numpy as np
+
+def muller_brown_potential(x, y):
     A = [-200, -100, -170, 15]
     a = [-1, -1, -6.5, 0.7]
     b = [0, 0, 11, 0.6]
@@ -16,7 +18,7 @@ def Exy(x, y):
     return Exy
 
 
-def Exy(x, y):
+def pes1(x, y):
     Exy = 0
     Exy = 0.5 * np.exp(np.sin(x - 2) + np.cos(y)) + np.exp(np.sin(x - y) - np.cos(y)) + np.exp(np.sin(y) + 3 * np.cos(x - y)) / 14 + 2 / (np.exp(x + y - 3) + 1) + np.exp((x ** 2) / 3 + (y ** 2) / 5) / 1000
     return Exy

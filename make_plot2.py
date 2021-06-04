@@ -14,25 +14,12 @@ from bokeh.models import (
     PrintfTickFormatter,
     Title,
 )
-
+import function_memo
 from bokeh.resources import CDN
 
 
 def Exy(x, y):
-    A = [-200, -100, -170, 15]
-    a = [-1, -1, -6.5, 0.7]
-    b = [0, 0, 11, 0.6]
-    c = [-10, -10, -6.5, 0.7]
-    X = [1, 0, -0.5, -1]
-    Y = [0, 0.5, 1.5, 1]
-
-    Exy = 0
-    for i in range(4):
-        Exy += A[i] * np.exp(
-            a[i] * ((x - X[i]) ** 2)
-            + b[i] * (x - X[i]) * (y - Y[i])
-            + c[i] * ((y - Y[i]) ** 2)
-        )
+    Exy = function_memo.muller_brown_potential(x,y)
     return Exy
 
 

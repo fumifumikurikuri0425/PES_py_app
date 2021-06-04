@@ -1,3 +1,4 @@
+from bokeh.util.dependencies import import_optional
 from starlette.requests import Request
 import uvicorn
 
@@ -45,8 +46,8 @@ async def read_item_1(
     ymax: float = 3,
     zmin: float = -147,
     zmax: float = 100,
+    function_name: str = "mbp",
 ):
-    # グラフを作成する。
     print("colortone:", tone)
     print("interval:", interval)
     print("x=", x, "y=", y)
@@ -55,11 +56,21 @@ async def read_item_1(
     js_resources = INLINE.render_js()
     css_resources = INLINE.render_css()
 
+    func = None
+    import function_memo
+    if function_name == "mbp":
+        func = function_memo.muller_brown_potential
+    elif function_name == "pes1":
+        func = function_memo.pes1
+
+
+
+
     check_value = check
     print("check_value:", check_value)
     print("judge", judge)
     if judge:
-        make_data(x, y, check_value, step)
+        make_data(x, y, check_value, step, func)
     fig = make_plot(tone, interval, xmin, xmax, ymin, ymax, zmin, zmax, judge)
     # fig = make_graph_from_file(tone, zmax)
     print("fig finished!")
@@ -111,9 +122,9 @@ async def post_test(
 ):
 
     # file = request.files['file']
-    print("file: ", file)
-    print(file.file)
-    print(file.filename)
+    # print("file: ", file)
+    # print(file.file)
+    # print(file.filename)
     # print(len(file))
 
     # グラフを作成する。
@@ -161,108 +172,6 @@ async def post_test(
     )
 
 
-@app.get("/api2")
-async def read_item_2(
-    request: Request,
-    # intervalのデフォルトは0.05
-    interval: float = 0.1,
-    x: float = -0.75,
-    y: float = 0.55,
-    tone: int = 5,
-    check: int = 0,
-    step: float = 0.01,
-    xmin: float = -2.5,
-    xmax: float = 1.5,
-    ymin: float = -1,
-    ymax: float = 3,
-):
-    # グラフを作成する。
-    print("colortone:", tone)
-    print("interval:", interval)
-    print("x=", x, "y=", y)
-    print("step=", step)
-
-    js_resources = INLINE.render_js()
-    css_resources = INLINE.render_css()
-
-    check_value = check
-    print("check_value:", check_value)
-    make_data(x, y, check_value, step)
-    fig = make_plot(tone, interval, xmin, xmax, ymin, ymax)
-
-    script, div = components(fig, INLINE)
-    # print(script)
-    # print(div)
-
-    retval = {
-        "js_resources": js_resources,
-        "css_resources": css_resources,
-        "plot_div": div,
-        "plot_script": script,
-        "step": step,
-        "x": x,
-        "y": y,
-        "tone": tone,
-        "check": check,
-        "xmin": xmin,
-        "xmax": xmax,
-        "ymin": ymin,
-        "ymax": ymax,
-    }
-
-    return retval
-
-
-@app.get("/api3")
-async def read_item_3(
-    request: Request,
-    # intervalのデフォルトは0.05
-    interval: float = 0.1,
-    x: float = -0.75,
-    y: float = 0.55,
-    tone: int = 5,
-    check: int = 0,
-    step: float = 0.01,
-    xmin: float = -2.5,
-    xmax: float = 1.5,
-    ymin: float = -1,
-    ymax: float = 3,
-):
-    # グラフを作成する。
-    print("colortone:", tone)
-    print("interval:", interval)
-    print("x=", x, "y=", y)
-    print("step=", step)
-
-    js_resources = INLINE.render_js()
-    css_resources = INLINE.render_css()
-
-    check_value = check
-    print("check_value:", check_value)
-    make_data(x, y, check_value, step)
-    fig = make_plot(tone, interval, xmin, xmax, ymin, ymax)
-
-    script, div = components(fig, INLINE)
-    # print(script)
-    # print(div)
-
-    retval = {
-        "js_resources": js_resources,
-        "css_resources": css_resources,
-        "plot_div": div,
-        "plot_script": script,
-        "step": step,
-        "x": x,
-        "y": y,
-        "tone": tone,
-        "check": check,
-        "xmin": xmin,
-        "xmax": xmax,
-        "ymin": ymin,
-        "ymax": ymax,
-    }
-
-    return json_item(fig, "myplot")
 
 
 class Params(BaseModel):
@@ -274,10 +183,10 @@ class Params(BaseModel):
 @app.post("/api/test")
 async def post_api4(
     file: Optional[bytes] = File(None),
-    interval: float = Form(0.05),
+    interval: float = Form(0.01),
     x: float = Form(-0.75),
     y: float = Form(0.55),
-    tone: int = Form(20),
+    tone: int = Form(40),
     check: int = Form(0),
     step: float = Form(0.01),
     xmin: float = Form(-2.5),
@@ -302,14 +211,15 @@ async def post_api4(
     # TODO: calculate values here!!!
     X_list, Y_list, Z_list = create_test_data(xmin, xmax, ymin, ymax, interval)
     Z_list_meshed = get_meshgrid_from_xyzArray(X_list, Y_list, Z_list)
-
-    print(Z_list_meshed)
-    print(type(Z_list_meshed))
+    print("interval",interval)
+    print("xrange: ",xmin,"~",xmax)
+    print("yrange ",ymin,"~",ymax)
 
     return {
         "params": params,
         "data": {
             "energy": Z_list_meshed.tolist(),
+            "optimizeLine": { "xlist": [], "ylist": []}
         },
     }
 

@@ -38,13 +38,13 @@
         Initial y: <input name="y" type="text" size="10" value="{{y}}" required></input>
         </div>
 
-        <div>
+        {% comment %} <div>
         {% if judge==True%}
             <label>Optomaized Line : <input name="judge" type="checkbox" checked></input></label>
         {%else%}
             <label>Optomaized Line : <input name="judge" type="checkbox"></input></label>
         {%endif%}
-        </div>
+        </div> {% endcomment %}
 
         <div>
         xmin: <input name="xmin" type="text" size="10" value="{{xmin}}" required></input>

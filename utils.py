@@ -13,7 +13,6 @@ def get_meshgrid_from_xyzArray(xar, yar, zar):
 
 
 def create_test_data(xmin, xmax, ymin, ymax, interval):
-    np.set_printoptions(precision=6, floatmode="fixed", suppress=True)
 
     np.set_printoptions(precision=6, floatmode="fixed", suppress=True)
 
