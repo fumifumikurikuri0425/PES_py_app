@@ -15,8 +15,8 @@ from bokeh.embed import components
 from bokeh.resources import INLINE
 from bokeh.embed import json_item
 
-from make_plot2 import make_plot
-from graph2 import make_data
+from make_plot2 import make_plot, get_contour_line
+from optimize_line import make_data
 from PES_from_file import make_graph_from_file
 
 from utils import create_test_data, get_meshgrid_from_xyzArray
@@ -58,13 +58,11 @@ async def read_item_1(
 
     func = None
     import function_memo
+
     if function_name == "mbp":
         func = function_memo.muller_brown_potential
     elif function_name == "pes1":
         func = function_memo.pes1
-
-
-
 
     check_value = check
     print("check_value:", check_value)
@@ -105,7 +103,7 @@ async def read_item_1(
 @app.post("/post_version")
 async def post_test(
     request: Request,
-    file: UploadFile = File(...),
+    # file: UploadFile = File(...),
     interval: float = Form(0.1),
     x: float = Form(-0.75),
     y: float = Form(0.55),
@@ -172,8 +170,6 @@ async def post_test(
     )
 
 
-
-
 class Params(BaseModel):
     interval: float = 0.1
     x: Optional[float] = -0.75
@@ -183,7 +179,7 @@ class Params(BaseModel):
 @app.post("/api/test")
 async def post_api4(
     file: Optional[bytes] = File(None),
-    interval: float = Form(0.01),
+    resolution: float = Form(300),
     x: float = Form(-0.75),
     y: float = Form(0.55),
     tone: int = Form(40),
@@ -193,10 +189,12 @@ async def post_api4(
     xmax: float = Form(1.5),
     ymin: float = Form(-1),
     ymax: float = Form(3),
+    zmin: float = Form(-147),
+    zmax: float = Form(100),
 ):
 
     params = {
-        "interval": interval,
+        "resolution": resolution,
         "x": x,
         "y": y,
         "tone": tone,
@@ -206,25 +204,68 @@ async def post_api4(
         "xmax": xmax,
         "ymin": ymin,
         "ymax": ymax,
+        "zmin": zmin,
+        "zmax": zmax,
     }
 
-    # TODO: calculate values here!!!
-    X_list, Y_list, Z_list = create_test_data(xmin, xmax, ymin, ymax, interval)
-    Z_list_meshed = get_meshgrid_from_xyzArray(X_list, Y_list, Z_list)
-    print("interval",interval)
-    print("xrange: ",xmin,"~",xmax)
-    print("yrange ",ymin,"~",ymax)
+    print(params)
 
+    # TODO: calculate values here!!!
+    X_list, Y_list, Z_list = create_test_data(xmin, xmax, ymin, ymax, resolution)
+    Z_list_meshed = get_meshgrid_from_xyzArray(X_list, Y_list, Z_list)
+    # print("interval",interval)
+    print("xrange: ", xmin, "~", xmax)
+    print("yrange ", ymin, "~", ymax)
+    X1_list, Y1_list, X2_list, Y2_list = make_data(x, y, check, step)
+    contours = get_contour_line(Z_list_meshed, xmin, xmax, ymin, ymax, zmin, zmax, tone)
     return {
         "params": params,
         "data": {
             "energy": Z_list_meshed.tolist(),
-            "optimizeLine": { "xlist": [], "ylist": []}
+            "contours": contours,
+            "optimizeLine": {
+                "x1_list": X1_list,
+                "y1_list": Y1_list,
+                "x2_list": X2_list,
+                "y2_list": Y2_list,
+            },
         },
     }
 
 
-origins = ["http://localhost", "http://localhost:8080", "http://localhost:3000", "ssss"]
+@app.post("/api/file")
+async def post_api5(
+    file: UploadFile = File(...), tone: int = Form(40), zmax: float = Form(100)
+):
+
+    params = {"tone": tone, "zmax": zmax}
+
+    print(file)
+
+    # print(file.name)
+    print(file.filename)
+
+    xmin, xmax, ymin, ymax, zmin, Z_list_meshed = make_graph_from_file(file.file, zmax)
+    contours = get_contour_line(Z_list_meshed, xmin, xmax, ymin, ymax, zmin, zmax, tone)
+    return {
+        "params": params,
+        "data": {
+            "energy": Z_list_meshed.tolist(),
+            "xmin": xmin,
+            "xmax": xmax,
+            "ymin": ymin,
+            "ymax": ymax,
+            "zmin": zmin,
+            "contours": contours,
+        },
+    }
+
+
+origins = [
+    "http://localhost",
+    "http://localhost:8080",
+    "http://localhost:3000",
+]
 
 app.add_middleware(
     CORSMiddleware,

@@ -15,74 +15,13 @@ from bokeh.models import (
     Title,
 )
 import function_memo
+from optimize_line import make_data
 from bokeh.resources import CDN
 
 
 def Exy(x, y):
-    Exy = function_memo.muller_brown_potential(x,y)
+    Exy = function_memo.muller_brown_potential(x, y)
     return Exy
-
-
-
-def make_optimize_line(p):
-
-    data_set = np.loadtxt(fname="graph1.csv", dtype="float", delimiter=",")
-
-    p_x1 = []
-    p_y1 = []
-
-    for data in data_set:
-        p_x1.append(data[0])
-        p_y1.append(data[1])
-
-    p.circle(p_x1[0], p_y1[0], color="pink", line_width=4)
-
-    p.line(p_x1, p_y1, line_width=2, color="#009688", alpha=0.5)
-
-    p.circle(p_x1[-1], p_y1[-1], color="lime", line_width=4)
-
-    data_set = np.loadtxt(fname="graph2.csv", dtype="float", delimiter=",")
-
-    p_x2 = []
-    p_y2 = []
-
-    for data in data_set:
-        p_x2.append(data[0])
-        p_y2.append(data[1])
-
-    p.line(p_x2, p_y2, line_width=2, color="cyan", alpha=0.5)
-
-    p.add_layout(
-        Title(
-            text=(
-                "TS:"
-                + " x="
-                + str(p_x1[-1])
-                + " y="
-                + str(p_y1[-1])
-                + " Energy:"
-                + " {:.6f}".format(Exy(p_x1[-1], p_y1[-1]))
-            ),
-            align="center",
-        ),
-        "below",
-    )
-
-    p.add_layout(
-        Title(
-            text=(
-                "EQ:"
-                + " x="
-                + str(p_x2[-1])
-                + " y="
-                + str(p_y2[-1])
-                + " Energy:"
-                + " {:.6f}".format(Exy(p_x2[-1], p_y2[-1]))
-            ),
-            align="center",
-        ),
-        "below",
-    )
 
 
 def make_plot(color_tone, interval, xmin, xmax, ymin, ymax, zmin, zmax, judge):
@@ -112,7 +51,7 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax, zmin, zmax, judge):
         height=530,
     )
     p.x_range.range_padding = p.y_range.range_padding = 0
-    #choose colors from cividis, gray, inferno, magma, viridis
+    # choose colors from cividis, gray, inferno, magma, viridis
     exp_cmap = LinearColorMapper(
         palette=palettes.inferno(color_tone), low=zmin, high=zmax
     )
@@ -142,8 +81,31 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax, zmin, zmax, judge):
 
     p.add_layout(color_bar, "right")
 
+
+# def get_contour_line(Z_list_meshed, zmin, zmax, color_tone):
+#     levels = np.linspace(zmin, zmax, color_tone + 1)
+#     x_shape = Z_list_meshed.shape[1] - 1
+#     y_shape = Z_list_meshed.shape[0] - 1
+
+#     contours_list = []
+
+#     for level in levels:
+
+#         if level == levels[-1]:
+#             break
+
+#         contours = measure.find_contours(Z_list_meshed, level)
+#         contours_list.append(contours)
+
+#     return contours_list
+
+
+def get_contour_line(Z_list_meshed, xmin, xmax, ymin, ymax, zmin, zmax, color_tone):
+    levels = np.linspace(zmin, zmax, color_tone + 1)
     x_shape = Z_list_meshed.shape[1] - 1
     y_shape = Z_list_meshed.shape[0] - 1
+
+    contours_list = []
 
     for level in levels:
 
@@ -151,15 +113,13 @@ def make_plot(color_tone, interval, xmin, xmax, ymin, ymax, zmin, zmax, judge):
             break
 
         contours = measure.find_contours(Z_list_meshed, level)
+        c_list = []
         for contour in contours:
-
             x = contour[:, 1] / x_shape * (xmax - xmin) + xmin
             y = contour[:, 0] / y_shape * (ymax - ymin) + ymin
+            d = {"x_list": x.tolist(), "y_list": y.tolist()}
+            c_list.append(d)
 
-            p.line(x, y, color="grey", line_width=1, alpha=1)
+        contours_list.append(c_list)
 
-
-    if judge:
-        make_optimize_line(p)
-
-    return p
+    return contours_list

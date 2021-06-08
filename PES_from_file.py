@@ -17,9 +17,9 @@ from bokeh.models import (
 
 from bokeh.resources import CDN
 
-def make_graph_from_file(color_tone, zmax):
+def make_graph_from_file(file,zmax):
 
-    data_set = np.loadtxt(fname="MBP.csv", dtype="float", delimiter=",")
+    data_set = np.loadtxt(fname=file, dtype="float", delimiter=",")
 
     X_list=[]
     Y_list=[]
@@ -44,7 +44,9 @@ def make_graph_from_file(color_tone, zmax):
     ymin=min(Y_list)
     ymax=max(Y_list)
     zmin=min(Z_list)
-    zmax=zmax
+
+
+    return xmin,xmax,ymin,ymax,zmin,Z_list_meshed
 
 
 
