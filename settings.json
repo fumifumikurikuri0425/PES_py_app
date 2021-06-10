@@ -1,12 +1,30 @@
 {
     "mbp": {
         "name": "muller_brown_potential",
-        "x": 0,
-        "y": -1,
+        "x": -0.75,
+        "y": 0.55,
+        "tone": 20,
+        "check": 0,
+        "step": 0.01,
+        "xmin": -2.5,
+        "xmax": 1.5,
+        "ymin": -1,
+        "ymax": 3,
+        "zmin": -147,
+        "zmax": 100
     },
     "pes1": {
         "name": "pes1",
-        "x": 0,
-        "y": -1,
+        "x": 2,
+        "y": 2,
+        "tone": 20,
+        "check": 0,
+        "step": 0.01,
+        "xmin": -6,
+        "xmax": 6,
+        "ymin": -6.5,
+        "ymax": 6.5,
+        "zmin": 1,
+        "zmax": 7
     }
 }

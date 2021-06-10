@@ -1,4 +1,15 @@
+from memo.test import E
 import numpy as np
+
+
+def calculate_energy(x, y, function):
+    Exy = 0
+    if function == 0:
+        Exy = muller_brown_potential(x, y)
+    elif function == 1:
+        Exy = pes1(x, y)
+    return Exy
+
 
 def muller_brown_potential(x, y):
     A = [-200, -100, -170, 15]
@@ -20,34 +31,39 @@ def muller_brown_potential(x, y):
 
 def pes1(x, y):
     Exy = 0
-    Exy = 0.5 * np.exp(np.sin(x - 2) + np.cos(y)) + np.exp(np.sin(x - y) - np.cos(y)) + np.exp(np.sin(y) + 3 * np.cos(x - y)) / 14 + 2 / (np.exp(x + y - 3) + 1) + np.exp((x ** 2) / 3 + (y ** 2) / 5) / 1000
+    t1 = 0.5 * np.exp(np.sin(x - 2) + np.cos(y))
+    t2 = np.exp(np.sin(x - y) - np.cos(y))
+    t3 = np.exp(np.sin(y) + 3 * np.cos(x - y)) / 14
+    t4 = 2 / (np.exp(x + y - 3) + 1)
+    t5 = np.exp((x ** 2) / 3 + (y ** 2) / 5) / 1000
+    Exy = t1 + t2 + t3 + t4 + t5
     return Exy
 
 
-def Exy(x, y):
+def pes2(x, y):
     Exy = 0
-    Exy = (
-        1
-        + (x + y + 1) ** 2
-        * (19 - 14 * x + 3 * x ** 2 - 14 * y + 6 * x * y + 3 * y ** 2)
-    ) * (
-        30
-        + (2 * x - 3 * y) ** 2
-        * (18 - 32 * x + 12 * x * x + 48 * y - 36 * x * y + 27 * y ** 2)
-    )
+    t1 = 20
+    t2 = x ** 2 - 10 * np.cos(2 * np.pi * x)
+    t3 = y ** 2 - 10 * np.cos(2 * np.pi * y)
+    Exy = t1 + t2 + t3
+
     return Exy
 
-def Exy(x, y):
+
+def pes3(x, y):
     Exy = 0
     Exy = np.sin(x) ** 10 + np.cos(10 + y * x) * np.cos(x)
 
     return Exy
 
-def Exy(x, y):
-    Exy = 0
-    t1 = 20
-    t2 = x**2 -10*np.cos(2*np.pi*x)
-    t3 = y**2 -10*np.cos(2*np.pi*y)
-    Exy = t1 + t2 + t3
 
+def pes4(x, y):
+    Exy = 0
+    Exy = np.sin(x) * np.cos(y)
+    return Exy
+
+
+def pes5(x, y):
+    Exy = 0
+    Exy = -np.sum(x * np.sin(np.sqrt(np.abs(x))) + y * np.sin(np.sqrt(np.abs(y))))
     return Exy

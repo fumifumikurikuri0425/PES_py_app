@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+import function_memo
 
 
 def get_meshgrid_from_xyzArray(xar, yar, zar):
@@ -12,7 +13,7 @@ def get_meshgrid_from_xyzArray(xar, yar, zar):
     return Z_list_meshed
 
 
-def create_test_data(xmin, xmax, ymin, ymax, resolution):
+def create_pes_data(function, xmin, xmax, ymin, ymax, resolution):
     np.set_printoptions(precision=6, floatmode="fixed", suppress=True)
 
     X_list = np.linspace(xmin, xmax, resolution)
@@ -24,25 +25,25 @@ def create_test_data(xmin, xmax, ymin, ymax, resolution):
 
     for x in X_list:
         for y in Y_list:
-            MBP = Exy(x, y)
+            MBP = Exy(x, y, function)
             Z_list.append(float(MBP))
 
     return X_list, Y_list, Z_list
 
 
-def Exy(x, y):
-    A = [-200, -100, -170, 15]
-    a = [-1, -1, -6.5, 0.7]
-    b = [0, 0, 11, 0.6]
-    c = [-10, -10, -6.5, 0.7]
-    X = [1, 0, -0.5, -1]
-    Y = [0, 0.5, 1.5, 1]
-
+def Exy(x, y, function_name):
     Exy = 0
-    for i in range(4):
-        Exy += A[i] * np.exp(
-            a[i] * ((x - X[i]) ** 2)
-            + b[i] * (x - X[i]) * (y - Y[i])
-            + c[i] * ((y - Y[i]) ** 2)
-        )
+    if function_name == "mbp":
+        Exy = function_memo.muller_brown_potential(x, y)
+    elif function_name == "pes1":
+        Exy = function_memo.pes1(x, y)
+    elif function_name == "pes2":
+        Exy = function_memo.pes2(x, y)
+    elif function_name == "pes3":
+        Exy = function_memo.pes3(x, y)
+    elif function_name == "pes4":
+        Exy = function_memo.pes4(x, y)
+    elif function_name == "pes5":
+        Exy = function_memo.pes5(x, y)
+
     return Exy

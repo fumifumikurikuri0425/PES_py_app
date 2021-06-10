@@ -1,27 +1,25 @@
 import numpy as np
+import function_memo
 
 
-def make_data(first_x, first_y, check, step):
-
+def make_data(function_name, first_x, first_y, check, step):
     def Exy(x, y):
-        A = [-200, -100, -170, 15]
-        a = [-1, -1, -6.5, 0.7]
-        b = [0, 0, 11, 0.6]
-        c = [-10, -10, -6.5, 0.7]
-        X = [1, 0, -0.5, -1]
-        Y = [0, 0.5, 1.5, 1]
-
         Exy = 0
-        for i in range(4):
-            Exy += A[i] * np.exp(
-                a[i] * ((x - X[i]) ** 2)
-                + b[i] * (x - X[i]) * (y - Y[i])
-                + c[i] * ((y - Y[i]) ** 2)
-            )
+        if function_name == "mbp":
+            Exy = function_memo.muller_brown_potential(x, y)
+        elif function_name == "pes1":
+            Exy = function_memo.pes1(x, y)
+        elif function_name == "pes2":
+            Exy = function_memo.pes2(x, y)
+        elif function_name == "pes3":
+            Exy = function_memo.pes3(x, y)
+        elif function_name == "pes4":
+            Exy = function_memo.pes4(x, y)
+        elif function_name == "pes5":
+            Exy = function_memo.pes5(x, y)
         return Exy
 
     # 1階微分
-
     h = 1e-7
 
     def fx(x, y):
@@ -135,9 +133,7 @@ def make_data(first_x, first_y, check, step):
             )
             y = y - step * (
                 -np.cos(np.radians(z))
-                / np.sqrt(
-                    (np.cos(np.radians(z))) ** 2 + (np.sin(np.radians(z))) ** 2
-                )
+                / np.sqrt((np.cos(np.radians(z))) ** 2 + (np.sin(np.radians(z))) ** 2)
             )
 
     elif check == 1:
@@ -155,9 +151,7 @@ def make_data(first_x, first_y, check, step):
             )
             y = y + step * (
                 -np.cos(np.radians(z))
-                / np.sqrt(
-                    (np.cos(np.radians(z))) ** 2 + (np.sin(np.radians(z))) ** 2
-                )
+                / np.sqrt((np.cos(np.radians(z))) ** 2 + (np.sin(np.radians(z))) ** 2)
             )
     X2_list.append(x)
     Y2_list.append(y)
@@ -184,56 +178,7 @@ def make_data(first_x, first_y, check, step):
         X2_list.append(x)
         Y2_list.append(y)
 
-    return X1_list,Y1_list,X2_list,Y2_list
+    TS = Exy(X1_list[-1], Y1_list[-1])
+    EQ = Exy(X2_list[-1], Y2_list[-1])
 
-def make_optimize_line(p, X1_list, Y1_list, X2_list, Y2_list):
-
-    p_x1, p_y1, p_x2, p_y2 = make_data()
-
-    p_x1 = X1_list
-    p_y1 = Y1_list
-
-    p.circle(p_x1[0], p_y1[0], color="pink", line_width=4)
-
-    p.line(p_x1, p_y1, line_width=2, color="#009688", alpha=0.5)
-
-    p.circle(p_x1[-1], p_y1[-1], color="lime", line_width=4)
-
-    data_set = np.loadtxt(fname="graph2.csv", dtype="float", delimiter=",")
-
-    p_x2 = X2_list
-    p_y2 = Y2_list
-
-    p.line(p_x2, p_y2, line_width=2, color="cyan", alpha=0.5)
-
-    p.add_layout(
-        Title(
-            text=(
-                "TS:"
-                + " x="
-                + str(p_x1[-1])
-                + " y="
-                + str(p_y1[-1])
-                + " Energy:"
-                + " {:.6f}".format(Exy(p_x1[-1], p_y1[-1]))
-            ),
-            align="center",
-        ),
-        "below",
-    )
-
-    p.add_layout(
-        Title(
-            text=(
-                "EQ:"
-                + " x="
-                + str(p_x2[-1])
-                + " y="
-                + str(p_y2[-1])
-                + " Energy:"
-                + " {:.6f}".format(Exy(p_x2[-1], p_y2[-1]))
-            ),
-            align="center",
-        ),
-        "below",
-    )
+    return X1_list, Y1_list, X2_list, Y2_list, TS, EQ
