@@ -1,5 +1,4 @@
 import numpy as np
-import function_memo
 
 
 def calculate_distance(x, y):
@@ -8,21 +7,13 @@ def calculate_distance(x, y):
     return distance
 
 
-def make_data(function_name, first_x, first_y, check, step):
+def make_data_from_code(code, first_x, first_y, check, step):
+
+    a = dict()
+    exec(code, globals(), a)
+
     def Exy(x, y):
-        Exy = 0
-        if function_name == "mbp":
-            Exy = function_memo.muller_brown_potential(x, y)
-        elif function_name == "pes1":
-            Exy = function_memo.pes1(x, y)
-        elif function_name == "pes2":
-            Exy = function_memo.pes2(x, y)
-        elif function_name == "pes3":
-            Exy = function_memo.pes3(x, y)
-        elif function_name == "pes4":
-            Exy = function_memo.pes4(x, y)
-        elif function_name == "pes5":
-            Exy = function_memo.pes5(x, y)
+        Exy = a["E"](x, y)
         return Exy
 
     # 1階微分

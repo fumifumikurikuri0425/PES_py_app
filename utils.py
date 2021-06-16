@@ -31,6 +31,29 @@ def create_pes_data(function, xmin, xmax, ymin, ymax, resolution):
     return X_list, Y_list, Z_list
 
 
+def create_pes_data_from_code(code, xmin, xmax, ymin, ymax, resolution):
+    np.set_printoptions(precision=6, floatmode="fixed", suppress=True)
+    # print(code)
+    a = dict()
+    exec(code, globals(), a)
+    # test = eval("E(4,3)")
+    # print("test:", str(test))
+
+    X_list = np.linspace(xmin, xmax, resolution)
+    Y_list = np.linspace(ymin, ymax, resolution)
+    # print(X_list)
+    # print(Y_list)
+
+    Z_list = []
+
+    for x in X_list:
+        for y in Y_list:
+            MBP = a["E"](x, y)
+            Z_list.append(float(MBP))
+
+    return X_list, Y_list, Z_list
+
+
 def Exy(x, y, function_name):
     Exy = 0
     if function_name == "mbp":

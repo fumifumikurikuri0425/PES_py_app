@@ -1,5 +1,6 @@
 # from bokeh.util.dependencies import import_optional
 # from starlette.requests import Request
+from optimize_from_code import make_data_from_code
 import uvicorn
 
 from fastapi import FastAPI, Request, File, Form, UploadFile
@@ -19,7 +20,7 @@ from make_plot2 import get_contour_line
 from optimize_line import make_data
 from PES_from_file import make_graph_from_file
 
-from utils import create_pes_data, get_meshgrid_from_xyzArray
+from utils import create_pes_data, create_pes_data_from_code, get_meshgrid_from_xyzArray
 
 
 app = FastAPI()
@@ -27,82 +28,6 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
-
-
-# @app.get("/")
-# async def read_item_1(
-#     request: Request,
-#     # intervalのデフォルトは0.05
-#     interval: float = 0.01,
-#     x: float = -0.75,
-#     y: float = 0.55,
-#     tone: int = 20,
-#     check: int = 0,
-#     judge: bool = False,
-#     step: float = 0.01,
-#     xmin: float = -2.5,
-#     xmax: float = 1.5,
-#     ymin: float = -1,
-#     ymax: float = 3,
-#     zmin: float = -147,
-#     zmax: float = 100,
-#     function_name: str = "mbp",
-# ):
-#     print("colortone:", tone)
-#     print("interval:", interval)
-#     print("x=", x, "y=", y)
-#     print("step=", step)
-
-#     js_resources = INLINE.render_js()
-#     css_resources = INLINE.render_css()
-
-#     func = None
-#     import function_memo
-
-#     if function_name == "mbp":
-#         func = function_memo.muller_brown_potential
-#     elif function_name == "pes1":
-#         func = function_memo.pes1
-
-#     check_value = check
-#     print("check_value:", check_value)
-#     print("judge", judge)
-#     if judge:
-#         make_data(x, y, check_value, step, func)
-#     fig = make_plot(tone, interval, xmin, xmax, ymin, ymax, zmin, zmax, judge)
-#     # fig = make_graph_from_file(tone, zmax)
-#     print("fig finished!")
-
-#     script, div = components(fig, INLINE)
-
-#     return templates.TemplateResponse(
-#         "index.html",
-#         {
-#             "request": request,
-#             "js_resources": js_resources,
-#             "css_resources": css_resources,
-#             "plot_div": div,
-#             "plot_script": script,
-#             "step": step,
-#             "x": x,
-#             "y": y,
-#             "tone": tone,
-#             "check": check,
-#             "judge": judge,
-#             "xmin": xmin,
-#             "xmax": xmax,
-#             "ymin": ymin,
-#             "ymax": ymax,
-#             "zmin": zmin,
-#             "zmax": zmax,
-#         },
-#     )
-
-
-class Params(BaseModel):
-    interval: float = 0.1
-    x: Optional[float] = -0.75
-    y: Optional[float] = 0.55
 
 
 @app.post("/api/test")
@@ -121,6 +46,7 @@ async def post_api4(
     ymax: float = Form(3),
     zmin: float = Form(-147),
     zmax: float = Form(100),
+    contour_on: bool = Form(False),
     optimize_on: bool = Form(False),
 ):
 
@@ -138,32 +64,48 @@ async def post_api4(
         "ymax": ymax,
         "zmin": zmin,
         "zmax": zmax,
+        "contour_on": contour_on,
         "optimize_on": optimize_on,
     }
-
+    print("start")
     # ** make arrays for drawing pes
     X_list, Y_list, Z_list = create_pes_data(
         function_name, xmin, xmax, ymin, ymax, resolution
     )
+    print("finish make arrays for pes")
     # ** convert arrays to mesh data array
     Z_list_meshed = get_meshgrid_from_xyzArray(X_list, Y_list, Z_list)
-
-    # ** make data for contour line
-    contours = get_contour_line(Z_list_meshed, xmin, xmax, ymin, ymax, zmin, zmax, tone)
-
+    print("finish convert arrays")
     result = {
         "params": params,
         "data": {
             "energy": Z_list_meshed.tolist(),
-            "contours": contours,
         },
     }
+    # ** make data for contour line
+    if contour_on:
+        contours = get_contour_line(
+            Z_list_meshed, xmin, xmax, ymin, ymax, zmin, zmax, tone
+        )
+        result["data"]["contours"] = {
+            "contours": contours,
+        }
+        print("finish make contour")
 
     # ** make arrays for draw optimize line
     if optimize_on:
-        X1_list, Y1_list, X2_list, Y2_list, TS, EQ = make_data(
-            function_name, x, y, check, step
-        )
+        (
+            X1_list,
+            Y1_list,
+            X2_list,
+            Y2_list,
+            TS,
+            EQ,
+            count,
+            Distance_list,
+            Energy_list,
+            TS_point,
+        ) = make_data(function_name, x, y, check, step)
         result["data"]["optimizeLine"] = {
             "x1_list": X1_list,
             "y1_list": Y1_list,
@@ -171,21 +113,30 @@ async def post_api4(
             "y2_list": Y2_list,
             "TS": TS,
             "EQ": EQ,
+            "count": count,
+            "Distance_list": Distance_list,
+            "Energy_list": Energy_list,
+            "TS_point": TS_point,
         }
+        print("finish make arrays for draw optimize line")
+    # print(result)
 
     return result
 
 
 @app.post("/api/file")
 async def post_api5(
-    file: UploadFile = File(...), tone: int = Form(40), zmax: float = Form(100)
+    file: UploadFile = File(...),
+    tone: int = Form(40),
+    zmax: float = Form(100),
+    contour_on: bool = Form(False),
 ):
     params = {"tone": tone, "zmax": zmax}
     # ** make data and array for pes
     xmin, xmax, ymin, ymax, zmin, Z_list_meshed = make_graph_from_file(file.file)
     # ** make array for contour line
     contours = get_contour_line(Z_list_meshed, xmin, xmax, ymin, ymax, zmin, zmax, tone)
-    return {
+    result = {
         "params": params,
         "data": {
             "energy": Z_list_meshed.tolist(),
@@ -194,9 +145,112 @@ async def post_api5(
             "ymin": ymin,
             "ymax": ymax,
             "zmin": zmin,
-            "contours": contours,
         },
     }
+    # ** make data for contour line
+    if contour_on:
+        contours = get_contour_line(
+            Z_list_meshed, xmin, xmax, ymin, ymax, zmin, zmax, tone
+        )
+        result["data"]["contours"] = {
+            "contours": contours,
+        }
+    return result
+
+
+@app.post("/api/write")
+async def post_write(
+    # file: Optional[bytes] = File(None),
+    code: str = Form(...),
+    resolution: float = Form(300),
+    x: float = Form(-0.75),
+    y: float = Form(0.55),
+    tone: int = Form(20),
+    check: int = Form(0),
+    step: float = Form(0.01),
+    xmin: float = Form(-2.5),
+    xmax: float = Form(1.5),
+    ymin: float = Form(-1),
+    ymax: float = Form(3),
+    zmin: float = Form(-147),
+    zmax: float = Form(100),
+    contour_on: bool = Form(False),
+    optimize_on: bool = Form(False),
+):
+    print(code)
+
+    params = {
+        "code": code,
+        "resolution": resolution,
+        "x": x,
+        "y": y,
+        "tone": tone,
+        "check": check,
+        "step": step,
+        "xmin": xmin,
+        "xmax": xmax,
+        "ymin": ymin,
+        "ymax": ymax,
+        "zmin": zmin,
+        "zmax": zmax,
+        "contour_on": contour_on,
+        "optimize_on": optimize_on,
+    }
+    print("start")
+    # ** make arrays for drawing pes
+    X_list, Y_list, Z_list = create_pes_data_from_code(
+        code, xmin, xmax, ymin, ymax, resolution
+    )
+    print("finish make arrays for pes")
+    # ** convert arrays to mesh data array
+    Z_list_meshed = get_meshgrid_from_xyzArray(X_list, Y_list, Z_list)
+    print("finish convert arrays")
+    result = {
+        "params": params,
+        "data": {
+            "energy": Z_list_meshed.tolist(),
+        },
+    }
+    # ** make data for contour line
+    if contour_on:
+        contours = get_contour_line(
+            Z_list_meshed, xmin, xmax, ymin, ymax, zmin, zmax, tone
+        )
+        result["data"]["contours"] = {
+            "contours": contours,
+        }
+        print("finish make contour")
+
+    # ** make arrays for draw optimize line
+    if optimize_on:
+        (
+            X1_list,
+            Y1_list,
+            X2_list,
+            Y2_list,
+            TS,
+            EQ,
+            count,
+            Distance_list,
+            Energy_list,
+            TS_point,
+        ) = make_data_from_code(code, x, y, check, step)
+        result["data"]["optimizeLine"] = {
+            "x1_list": X1_list,
+            "y1_list": Y1_list,
+            "x2_list": X2_list,
+            "y2_list": Y2_list,
+            "TS": TS,
+            "EQ": EQ,
+            "count": count,
+            "Distance_list": Distance_list,
+            "Energy_list": Energy_list,
+            "TS_point": TS_point,
+        }
+        print("finish make arrays for draw optimize line")
+    # print(result)
+
+    return result
 
 
 origins = [
