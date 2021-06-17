@@ -1,4 +1,4 @@
-# # Getting Started PES App
+# Getting Started PES App
 
 These programs are used on the server side.
 
@@ -21,7 +21,7 @@ If you haven't cloned JavaScript repository, please clone https://github.com/fum
 
 Prerequisites:
 - Python 3.9
-- pipenv
+- pipenv (please see [Pipfile](./Pipfile))
 
 Install the project dependencies:
 ```
