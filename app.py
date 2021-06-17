@@ -1,36 +1,23 @@
-# from bokeh.util.dependencies import import_optional
-# from starlette.requests import Request
-from optimize_from_code import make_data_from_code
 import uvicorn
+from fastapi import FastAPI, File, Form, UploadFile
 
-from fastapi import FastAPI, Request, File, Form, UploadFile
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import Optional
 
-import numpy as np
-
-# from bokeh.embed import components
-# from bokeh.resources import INLINE
-# from bokeh.embed import json_item
-
-from make_plot2 import get_contour_line
+from optimize_from_code import make_data_from_code
 from optimize_line import make_data
 from PES_from_file import make_graph_from_file
-
-from utils import create_pes_data, create_pes_data_from_code, get_meshgrid_from_xyzArray
+from utils import (
+    create_pes_data,
+    create_pes_data_from_code,
+    get_meshgrid_from_xyzArray,
+    get_contour_line,
+)
 
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
-templates = Jinja2Templates(directory="templates")
-
-
-@app.post("/api/test")
+@app.post("/")
 async def post_api4(
     # file: Optional[bytes] = File(None),
     function_name: str = Form("mbp"),

@@ -1,6 +1,6 @@
-import sys
 import numpy as np
 import function_memo
+from skimage import measure
 
 
 def get_meshgrid_from_xyzArray(xar, yar, zar):
@@ -70,3 +70,28 @@ def Exy(x, y, function_name):
         Exy = function_memo.pes5(x, y)
 
     return Exy
+
+
+def get_contour_line(Z_list_meshed, xmin, xmax, ymin, ymax, zmin, zmax, color_tone):
+    levels = np.linspace(zmin, zmax, color_tone + 1)
+    x_shape = Z_list_meshed.shape[1] - 1
+    y_shape = Z_list_meshed.shape[0] - 1
+
+    contours_list = []
+
+    for level in levels:
+
+        if level == levels[-1]:
+            break
+
+        contours = measure.find_contours(Z_list_meshed, level)
+        c_list = []
+        for contour in contours:
+            x = contour[:, 1] / x_shape * (xmax - xmin) + xmin
+            y = contour[:, 0] / y_shape * (ymax - ymin) + ymin
+            d = {"x_list": x.tolist(), "y_list": y.tolist()}
+            c_list.append(d)
+
+        contours_list.append(c_list)
+
+    return contours_list

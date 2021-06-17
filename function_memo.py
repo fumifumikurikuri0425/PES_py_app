@@ -1,4 +1,3 @@
-from memo.test import E
 import numpy as np
 
 

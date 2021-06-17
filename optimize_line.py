@@ -1,11 +1,15 @@
 import numpy as np
 import function_memo
+import time
 
 
 def calculate_distance(x, y):
     distance = 0
     distance = np.sqrt(x ** 2 + y ** 2)
     return distance
+
+
+TIMEOUT = 30
 
 
 def make_data(function_name, first_x, first_y, check, step):
@@ -88,7 +92,7 @@ def make_data(function_name, first_x, first_y, check, step):
     count = 0
 
     # Newton法で鞍点まで行く
-
+    start = time.time()
     while fx_tmp > 1e-5 and fy_tmp > 1e-5:
         X1_list.append(x)
         Y1_list.append(y)
@@ -110,6 +114,10 @@ def make_data(function_name, first_x, first_y, check, step):
         fx_tmp = abs(fx(x, y))
         fy_tmp = abs(fy(x, y))
         count += 1
+
+        elapsed_time = time.time() - start
+        if elapsed_time > TIMEOUT:
+            raise RuntimeError("Over calculate time (30sec)")
 
     X2_list.append(x)
     Y2_list.append(y)
@@ -197,6 +205,8 @@ def make_data(function_name, first_x, first_y, check, step):
     checkdx = 1
     checkdy = 1
     Eb = 10
+
+    start = time.time()
     while checkdx > 1.0e-5 and checkdy > 1.0e-5:
 
         fx_tmp = fx(x, y)
@@ -223,6 +233,10 @@ def make_data(function_name, first_x, first_y, check, step):
         distance += calculate_distance(x_after - x_before, y_after - y_before)
         Distance_list.append(distance)
         Energy_list.append(Exy(x, y))
+
+        elapsed_time = time.time() - start
+        if elapsed_time > TIMEOUT:
+            raise RuntimeError("Over calculate time (30sec)")
 
     TS = Exy(X1_list[-1], Y1_list[-1])
     EQ = Exy(X2_list[-1], Y2_list[-1])
