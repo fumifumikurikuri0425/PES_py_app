@@ -16,6 +16,8 @@ You can draw PES from files or writing function program.
 Clone and enter the project directory:
 ```
 git clone https://github.com/fumifumikurikuri0425/PES_py_app.git
+
+cd PES_py_app
 ```
 If you haven't cloned JavaScript repository, please clone https://github.com/fumifumikurikuri0425/PES-js-app.git
 
