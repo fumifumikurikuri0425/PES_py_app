@@ -5,6 +5,7 @@ These programs are used on the server side.
 This project is based on [FastAPI](https://fastapi.tiangolo.com/)
 
 ## About PES App
+![FBB92E2C-86F4-464F-9517-1E4C1338DD90_1_105_c](https://user-images.githubusercontent.com/83212005/137248984-2389951e-5e01-416a-80b7-ac35f78f7572.jpeg)
 
 A potential energy surface (PES) describes the energy of a system, especially a collection of atoms, in terms of certain parameters.
 
